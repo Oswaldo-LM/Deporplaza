@@ -1,0 +1,510 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="row justify-content-center">
+
+      <div class="col-xl-9">
+
+
+        @if (pagoRegistrado) {
+
+          <!-- PAGO REGISTRADO -->
+
+          <div
+            class="card
+                   border-success
+                   shadow-sm"
+          >
+
+            <div class="card-body p-5 text-center">
+
+              <div
+                class="display-5
+                       text-success
+                       mb-3"
+              >
+                ✓
+              </div>
+
+
+              <h2 class="fw-bold">
+                Comprobante registrado
+              </h2>
+
+
+              <p class="text-muted">
+                Tu pago fue recibido correctamente
+                y está pendiente de validación.
+              </p>
+
+
+              <div class="my-4">
+
+                <span
+                  class="badge
+                         text-bg-warning
+                         fs-6"
+                >
+                  PENDIENTE DE CONFIRMACIÓN
+                </span>
+
+              </div>
+
+
+              <p class="mb-1">
+                Reserva
+                <strong>
+                  #{{ pagoRegistrado.idReserva }}
+                </strong>
+              </p>
+
+
+              <p class="mb-4">
+                Monto:
+                <strong>
+                  S/ {{ pagoRegistrado.monto }}
+                </strong>
+              </p>
+
+
+              <a
+                routerLink="/"
+                class="btn btn-success"
+              >
+                Volver al inicio
+              </a>
+
+            </div>
+
+          </div>
+
+
+        } @else if (reserva) {
+
+
+          <div class="row g-4">
+
+
+            <!-- RESUMEN -->
+
+            <div class="col-lg-5">
+
+              <div
+                class="card
+                       border-0
+                       shadow-sm"
+              >
+
+                <div class="card-body p-4">
+
+                  <h5 class="fw-bold mb-4">
+                    Resumen de reserva
+                  </h5>
+
+
+                  <div class="mb-3">
+
+                    <div class="small text-muted">
+                      Reserva
+                    </div>
+
+                    <div class="fw-semibold">
+                      #{{ reserva.idReserva }}
+                    </div>
+
+                  </div>
+
+
+                  <div class="mb-3">
+
+                    <div class="small text-muted">
+                      Sede
+                    </div>
+
+                    <div>
+                      {{ reserva.nombreSede }}
+                    </div>
+
+                  </div>
+
+
+                  <div class="mb-3">
+
+                    <div class="small text-muted">
+                      Cancha
+                    </div>
+
+                    <div>
+                      {{ reserva.nombreCancha }}
+                    </div>
+
+                  </div>
+
+
+                  <div class="mb-3">
+
+                    <div class="small text-muted">
+                      Fecha
+                    </div>
+
+                    <div>
+                      {{ reserva.fechaTurno }}
+                    </div>
+
+                  </div>
+
+
+                  <div class="mb-3">
+
+                    <div class="small text-muted">
+                      Horario
+                    </div>
+
+                    <div>
+
+                      {{
+                        formatearHora(
+                          reserva.horaInicio
+                        )
+                      }}
+
+                      -
+
+                      {{
+                        formatearHora(
+                          reserva.horaFin
+                        )
+                      }}
+
+                    </div>
+
+                  </div>
+
+
+                  <hr>
+
+
+                  <div
+                    class="d-flex
+                           justify-content-between"
+                  >
+
+                    <span class="fw-semibold">
+                      Total
+                    </span>
+
+                    <span
+                      class="fs-4
+                             fw-bold
+                             text-success"
+                    >
+                      S/ {{ reserva.total }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- CONTADOR -->
+
+              <div
+                class="card
+                       border-0
+                       shadow-sm
+                       mt-3"
+              >
+
+                <div class="card-body text-center">
+
+                  @if (!expirado) {
+
+                    <div class="text-muted">
+                      Tiempo restante
+                    </div>
+
+                    <div
+                      class="contador
+                             fw-bold
+                             text-danger"
+                    >
+                      {{ obtenerMinutos() }}
+                      :
+                      {{ obtenerSegundos() }}
+                    </div>
+
+                    <small class="text-muted">
+                      Sube tu comprobante antes
+                      de que termine el tiempo.
+                    </small>
+
+                  } @else {
+
+                    <div
+                      class="alert
+                             alert-danger
+                             mb-0"
+                    >
+
+                      <strong>
+                        Reserva expirada
+                      </strong>
+
+                      <div class="mt-1">
+                        El tiempo para registrar
+                        el pago terminó.
+                      </div>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- PAGO -->
+
+            <div class="col-lg-7">
+
+              <div
+                class="card
+                       border-0
+                       shadow-sm"
+              >
+
+                <div class="card-body p-4">
+
+                  <h4 class="fw-bold">
+                    Registrar pago
+                  </h4>
+
+                  <p class="text-muted">
+                    Realiza el pago y adjunta
+                    el comprobante.
+                  </p>
+
+
+                  @if (errorMensaje) {
+
+                    <div
+                      class="alert
+                             alert-danger"
+                    >
+                      {{ errorMensaje }}
+                    </div>
+
+                  }
+
+
+                  <form
+                    [formGroup]="form"
+                    (ngSubmit)="enviarComprobante()"
+                  >
+
+
+                    <!-- MÉTODO -->
+
+                    <div class="mb-4">
+
+                      <label
+                        class="form-label"
+                      >
+                        Método de pago
+                      </label>
+
+
+                      <div class="row g-2">
+
+                        @for (
+                          metodo of metodosPago;
+                          track metodo
+                        ) {
+
+                          <div class="col-md-4">
+
+                            <label
+                              class="metodo-pago"
+                            >
+
+                              <input
+                                type="radio"
+                                class="btn-check"
+                                formControlName="metodoPago"
+                                [value]="metodo"
+                              >
+
+
+                              <span
+                                class="btn
+                                       btn-outline-success
+                                       w-100"
+                              >
+                                {{ metodo }}
+                              </span>
+
+                            </label>
+
+                          </div>
+
+                        }
+
+                      </div>
+
+                    </div>
+
+
+                    <!-- INSTRUCCIONES -->
+
+                    <div
+                      class="alert
+                             alert-light
+                             border"
+                    >
+
+                      <strong>
+                        Monto a pagar:
+                      </strong>
+
+                      S/ {{ reserva.total }}
+
+                      <br>
+
+                      <small class="text-muted">
+                        Realiza el pago utilizando
+                        el método seleccionado y luego
+                        adjunta tu comprobante.
+                      </small>
+
+                    </div>
+
+
+                    <!-- OPERACIÓN -->
+
+                    <div class="mb-3">
+
+                      <label
+                        for="numOperacion"
+                        class="form-label"
+                      >
+                        Número de operación
+                      </label>
+
+                      <input
+                        id="numOperacion"
+                        type="text"
+                        class="form-control"
+                        formControlName="numOperacion"
+                        maxlength="50"
+                      >
+
+                      <div
+                        class="form-text"
+                      >
+                        Ingresa el código o número
+                        mostrado en tu comprobante.
+                      </div>
+
+                    </div>
+
+
+                    <!-- ARCHIVO -->
+
+                    <div class="mb-4">
+
+                      <label
+                        for="comprobante"
+                        class="form-label"
+                      >
+                        Comprobante
+                      </label>
+
+
+                      <input
+                        id="comprobante"
+                        type="file"
+                        class="form-control"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        (change)="seleccionarArchivo($event)"
+                      >
+
+
+                      <div
+                        class="form-text"
+                      >
+                        JPG, JPEG, PNG o PDF.
+                        Máximo 5 MB.
+                      </div>
+
+
+                      @if (comprobante) {
+
+                        <div
+                          class="small
+                                 text-success
+                                 mt-2"
+                        >
+                          Archivo:
+                          {{ comprobante.name }}
+                        </div>
+
+                      }
+
+                    </div>
+
+
+                    <button
+                      type="submit"
+                      class="btn
+                             btn-success
+                             btn-lg
+                             w-100"
+                      [disabled]="
+                        enviando
+                        || expirado
+                      "
+                    >
+
+                      @if (enviando) {
+
+                        <span
+                          class="spinner-border
+                                 spinner-border-sm
+                                 me-2"
+                        ></span>
+
+                        Enviando...
+
+                      } @else {
+
+                        Enviar comprobante
+
+                      }
+
+                    </button>
+
+                  </form>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

@@ -1,0 +1,511 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="mb-4">
+
+      <a
+        routerLink="/disponibilidad"
+        class="text-decoration-none"
+      >
+        ← Volver a disponibilidad
+      </a>
+
+      <h1 class="fw-bold mt-3">
+        Registrar reserva
+      </h1>
+
+      <p class="text-muted">
+        Completa tus datos para reservar la cancha.
+      </p>
+
+    </div>
+
+
+    @if (cargando) {
+
+      <div class="text-center py-5">
+
+        <div class="spinner-border text-success"></div>
+
+        <div class="mt-3 text-muted">
+          Cargando información...
+        </div>
+
+      </div>
+
+    } @else if (errorMensaje && !cancha) {
+
+      <div class="alert alert-danger">
+        {{ errorMensaje }}
+      </div>
+
+    } @else if (cancha) {
+
+
+      <!-- RESERVA CREADA -->
+
+      @if (reservaCreada) {
+
+        <div class="card border-success shadow-sm">
+
+          <div class="card-body p-4">
+
+            <div class="alert alert-success">
+
+              <h5 class="alert-heading">
+                Reserva registrada
+              </h5>
+
+              Tu horario quedó bloqueado temporalmente.
+
+            </div>
+
+
+            <dl class="row mb-0">
+
+              <dt class="col-sm-5">
+                N.º de reserva
+              </dt>
+
+              <dd class="col-sm-7">
+                {{ reservaCreada.idReserva }}
+              </dd>
+
+
+              <dt class="col-sm-5">
+                Cancha
+              </dt>
+
+              <dd class="col-sm-7">
+                {{ reservaCreada.nombreCancha }}
+              </dd>
+
+
+              <dt class="col-sm-5">
+                Fecha
+              </dt>
+
+              <dd class="col-sm-7">
+                {{ reservaCreada.fechaTurno }}
+              </dd>
+
+
+              <dt class="col-sm-5">
+                Horario
+              </dt>
+
+              <dd class="col-sm-7">
+
+                {{
+                  formatearHora(
+                    reservaCreada.horaInicio
+                  )
+                }}
+
+                -
+
+                {{
+                  formatearHora(
+                    reservaCreada.horaFin
+                  )
+                }}
+
+              </dd>
+
+
+              <dt class="col-sm-5">
+                Total
+              </dt>
+
+              <dd class="col-sm-7 fw-bold">
+                S/ {{ reservaCreada.total }}
+              </dd>
+
+
+              <dt class="col-sm-5">
+                Estado
+              </dt>
+
+              <dd class="col-sm-7">
+
+                <span class="badge text-bg-warning">
+                  {{ reservaCreada.estado }}
+                </span>
+
+              </dd>
+
+            </dl>
+
+
+            <hr>
+
+
+            <div class="alert alert-warning mb-0">
+
+              Tienes aproximadamente
+              <strong>5 minutos</strong>
+              para subir tu comprobante de pago.
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+      } @else {
+
+
+        <div class="row g-4">
+
+
+          <!-- INFORMACIÓN DE RESERVA -->
+
+          <div class="col-lg-4">
+
+            <div
+              class="card border-0 shadow-sm sticky-lg-top"
+              style="top: 1rem;"
+            >
+
+              <div class="card-body p-4">
+
+                <h5 class="fw-bold mb-3">
+                  Tu reserva
+                </h5>
+
+
+                <div class="mb-3">
+
+                  <div class="text-muted small">
+                    Sede
+                  </div>
+
+                  <div class="fw-semibold">
+                    {{ cancha.nombreSede }}
+                  </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                  <div class="text-muted small">
+                    Cancha
+                  </div>
+
+                  <div class="fw-semibold">
+                    {{ cancha.nombre }}
+                  </div>
+
+                  <small class="text-muted">
+                    {{ cancha.superficie }}
+                  </small>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                  <div class="text-muted small">
+                    Fecha
+                  </div>
+
+                  <div>
+                    {{ fecha }}
+                  </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                  <div class="text-muted small">
+                    Hora de inicio
+                  </div>
+
+                  <div>
+                    {{ formatearHora(horaInicio) }}
+                  </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                  <div class="text-muted small">
+                    Precio por hora
+                  </div>
+
+                  <div>
+                    S/ {{ cancha.precioHora }}
+                  </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <div
+                  class="d-flex
+                         justify-content-between
+                         align-items-center"
+                >
+
+                  <span class="fw-semibold">
+                    Total
+                  </span>
+
+                  <span
+                    class="fs-4
+                           fw-bold
+                           text-success"
+                  >
+                    S/ {{ calcularTotal() }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- FORMULARIO -->
+
+          <div class="col-lg-8">
+
+            @if (errorMensaje) {
+
+              <div class="alert alert-danger">
+                {{ errorMensaje }}
+              </div>
+
+            }
+
+
+            <div class="card border-0 shadow-sm">
+
+              <div class="card-body p-4">
+
+                <form
+                  [formGroup]="form"
+                  (ngSubmit)="crearReserva()"
+                >
+
+
+                  <h5 class="fw-bold mb-3">
+                    Duración
+                  </h5>
+
+
+                  <div class="mb-4">
+
+                    <label
+                      for="duracion"
+                      class="form-label"
+                    >
+                      Tiempo de reserva
+                    </label>
+
+
+                    <select
+                      id="duracion"
+                      class="form-select"
+                      formControlName="cantidadExtras"
+                    >
+
+                      @for (
+                        extras of obtenerOpcionesExtras();
+                        track extras
+                      ) {
+
+                        <option
+                          [ngValue]="extras"
+                        >
+                          {{
+                            obtenerDuracionTexto(
+                              extras
+                            )
+                          }}
+                        </option>
+
+                      }
+
+                    </select>
+
+                  </div>
+
+
+                  <hr>
+
+
+                  <h5 class="fw-bold my-4">
+                    Datos del cliente
+                  </h5>
+
+
+                  <div class="mb-3">
+
+                    <label class="form-label">
+                      Nombre completo
+                    </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="nombreCompleto"
+                    >
+
+                    @if (
+                      form.controls.nombreCompleto.touched
+                      &&
+                      form.controls.nombreCompleto.invalid
+                    ) {
+
+                      <div class="text-danger small mt-1">
+                        El nombre es obligatorio.
+                      </div>
+
+                    }
+
+                  </div>
+
+
+                  <div class="row g-3 mb-3">
+
+                    <div class="col-md-4">
+
+                      <label class="form-label">
+                        Tipo de documento
+                      </label>
+
+                      <select
+                        class="form-select"
+                        formControlName="tipoDocumento"
+                      >
+
+                        @for (
+                          tipo of tiposDocumento;
+                          track tipo
+                        ) {
+
+                          <option [value]="tipo">
+                            {{ tipo }}
+                          </option>
+
+                        }
+
+                      </select>
+
+                    </div>
+
+
+                    <div class="col-md-8">
+
+                      <label class="form-label">
+                        Número de documento
+                      </label>
+
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="numDocumento"
+                      >
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+
+                      <label class="form-label">
+                        Correo electrónico
+                      </label>
+
+                      <input
+                        type="email"
+                        class="form-control"
+                        formControlName="email"
+                      >
+
+                      @if (
+                        form.controls.email.touched
+                        &&
+                        form.controls.email.invalid
+                      ) {
+
+                        <div class="text-danger small mt-1">
+                          Ingresa un correo válido.
+                        </div>
+
+                      }
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                      <label class="form-label">
+                        Teléfono
+                      </label>
+
+                      <input
+                        type="tel"
+                        class="form-control"
+                        formControlName="telefono"
+                      >
+
+                    </div>
+
+                  </div>
+
+
+                  <button
+                    type="submit"
+                    class="btn btn-success btn-lg w-100"
+                    [disabled]="guardando"
+                  >
+
+                    @if (guardando) {
+
+                      <span
+                        class="spinner-border
+                               spinner-border-sm
+                               me-2"
+                      ></span>
+
+                      Registrando...
+
+                    } @else {
+
+                      Confirmar reserva
+
+                    }
+
+                  </button>
+
+                </form>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</section>

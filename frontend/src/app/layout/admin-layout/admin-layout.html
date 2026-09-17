@@ -1,0 +1,121 @@
+<div class="admin-container">
+
+  <aside class="sidebar">
+
+    <div class="p-3 border-bottom border-secondary">
+
+      <h5 class="mb-0">
+        DeporPlaza
+      </h5>
+
+      <small class="text-secondary">
+        Administración
+      </small>
+
+    </div>
+
+
+    <nav class="nav flex-column p-3 gap-1">
+
+      <a
+        class="nav-link"
+        routerLink="/admin/dashboard"
+        routerLinkActive="active"
+      >
+        Dashboard
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/reservas"
+        routerLinkActive="active"
+      >
+        Reservas
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/reserva-presencial"
+        routerLinkActive="active"
+
+      
+      >
+        Nueva reserva
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/pagos"
+        routerLinkActive="active"
+      >
+        Pagos
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/sedes"
+        routerLinkActive="active"
+      >
+        Sedes
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/canchas"
+        routerLinkActive="active"
+      >
+        Canchas
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/admin/horarios"
+        routerLinkActive="active"
+      >
+        Horarios
+      </a>
+
+    </nav>
+
+  </aside>
+
+
+  <div class="main-content">
+
+    <header
+      class="bg-white border-bottom px-4 py-3
+             d-flex justify-content-between align-items-center"
+    >
+
+      <div>
+
+        <span class="text-muted">
+          Usuario:
+        </span>
+
+        <strong>
+          {{ usuario?.nombre }}
+        </strong>
+
+      </div>
+
+
+      <button
+        class="btn btn-outline-danger btn-sm"
+        (click)="cerrarSesion()"
+      >
+        Cerrar sesión
+      </button>
+
+    </header>
+
+
+    <main class="p-4">
+
+      <router-outlet />
+
+    </main>
+
+  </div>
+
+</div>

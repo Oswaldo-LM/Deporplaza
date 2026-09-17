@@ -1,0 +1,348 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="row justify-content-center">
+
+      <div class="col-lg-7">
+
+        <div class="text-center mb-4">
+
+          <h1 class="h3 fw-bold">
+            Crear cuenta
+          </h1>
+
+          <p class="text-muted">
+            Registrarte es opcional.
+            También puedes reservar como invitado.
+          </p>
+
+        </div>
+
+
+        <div class="card border-0 shadow-sm">
+
+          <div class="card-body p-4 p-lg-5">
+
+
+            @if (errorMensaje) {
+
+              <div class="alert alert-danger">
+                {{ errorMensaje }}
+              </div>
+
+            }
+
+
+            <form
+              [formGroup]="form"
+              (ngSubmit)="registrar()"
+            >
+
+              <div class="row g-3">
+
+
+                <div class="col-12">
+
+                  <label class="form-label">
+                    Nombre completo
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="nombreCompleto"
+                    placeholder="Nombre y apellidos"
+                    autocomplete="name"
+                  >
+
+
+                  @if (
+                    form.controls.nombreCompleto.touched
+                    &&
+                    form.controls.nombreCompleto.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+                      El nombre completo es obligatorio.
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                  <label class="form-label">
+                    Tipo de documento
+                  </label>
+
+                  <select
+                    class="form-select"
+                    formControlName="tipoDocumento"
+                  >
+
+                    @for (
+                      tipo of tiposDocumento;
+                      track tipo
+                    ) {
+
+                      <option [value]="tipo">
+                        {{ tipo }}
+                      </option>
+
+                    }
+
+                  </select>
+
+                </div>
+
+
+                <div class="col-md-8">
+
+                  <label class="form-label">
+                    Número de documento
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="numDocumento"
+                    placeholder="Número de documento"
+                  >
+
+
+                  @if (
+                    form.controls.numDocumento.touched
+                    &&
+                    form.controls.numDocumento.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+                      El número de documento es obligatorio.
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                  <label class="form-label">
+                    Correo electrónico
+                  </label>
+
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="cliente@correo.com"
+                    autocomplete="email"
+                  >
+
+
+                  @if (
+                    form.controls.email.touched
+                    &&
+                    form.controls.email.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+
+                      @if (
+                        form.controls.email.hasError(
+                          'required'
+                        )
+                      ) {
+
+                        El correo es obligatorio.
+
+                      } @else {
+
+                        Ingresa un correo válido.
+
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                  <label class="form-label">
+                    Teléfono
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="telefono"
+                    placeholder="999999999"
+                    autocomplete="tel"
+                  >
+
+
+                  @if (
+                    form.controls.telefono.touched
+                    &&
+                    form.controls.telefono.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+                      El teléfono es obligatorio.
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                  <label class="form-label">
+                    Contraseña
+                  </label>
+
+                  <input
+                    type="password"
+                    class="form-control"
+                    formControlName="password"
+                    autocomplete="new-password"
+                    placeholder="Mínimo 8 caracteres"
+                  >
+
+
+                  @if (
+                    form.controls.password.touched
+                    &&
+                    form.controls.password.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+
+                      @if (
+                        form.controls.password.hasError(
+                          'required'
+                        )
+                      ) {
+
+                        La contraseña es obligatoria.
+
+                      } @else {
+
+                        La contraseña debe tener
+                        al menos 8 caracteres.
+
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                  <label class="form-label">
+                    Confirmar contraseña
+                  </label>
+
+                  <input
+                    type="password"
+                    class="form-control"
+                    formControlName="confirmarPassword"
+                    autocomplete="new-password"
+                    placeholder="Repite la contraseña"
+                  >
+
+
+                  @if (
+                    form.controls.confirmarPassword.touched
+                    &&
+                    form.controls.confirmarPassword.invalid
+                  ) {
+
+                    <div class="text-danger small mt-1">
+                      Confirma tu contraseña.
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+
+              <button
+                type="submit"
+                class="btn btn-success btn-lg w-100 mt-4"
+                [disabled]="cargando"
+              >
+
+                @if (cargando) {
+
+                  <span
+                    class="spinner-border spinner-border-sm me-2"
+                    aria-hidden="true"
+                  ></span>
+
+                  Creando cuenta...
+
+                } @else {
+
+                  Crear cuenta
+
+                }
+
+              </button>
+
+            </form>
+
+
+            <hr class="my-4">
+
+
+            <div class="text-center">
+
+              <span class="text-muted">
+                ¿Ya tienes una cuenta?
+              </span>
+
+              <a
+                routerLink="/cliente/login"
+                class="text-decoration-none ms-1"
+              >
+                Iniciar sesión
+              </a>
+
+            </div>
+
+
+            <div class="text-center mt-3">
+
+              <a
+                routerLink="/"
+                class="text-decoration-none"
+              >
+                Volver al inicio
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

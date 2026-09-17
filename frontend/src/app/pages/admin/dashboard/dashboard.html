@@ -1,0 +1,530 @@
+<div
+  class="d-flex
+         justify-content-between
+         align-items-center
+         mb-4"
+>
+
+  <div>
+
+    <h2 class="fw-bold mb-1">
+      Dashboard
+    </h2>
+
+    <p class="text-muted mb-0">
+      Resumen de la operación del complejo deportivo.
+    </p>
+
+  </div>
+
+
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    (click)="cargarDashboard()"
+    [disabled]="cargando"
+  >
+    Actualizar
+  </button>
+
+</div>
+
+
+@if (errorMensaje) {
+
+  <div class="alert alert-danger">
+
+    {{ errorMensaje }}
+
+  </div>
+
+}
+
+
+@if (cargando && !resumen) {
+
+  <div class="text-center py-5">
+
+    <div
+      class="spinner-border text-success"
+    ></div>
+
+    <div class="text-muted mt-3">
+      Cargando dashboard...
+    </div>
+
+  </div>
+
+}
+
+
+@if (resumen) {
+
+
+  <!-- TARJETAS -->
+
+  <div class="row g-4 mb-4">
+
+
+    <!-- RESERVAS HOY -->
+
+    <div class="col-sm-6 col-xl-3">
+
+      <div
+        class="card
+               border-0
+               shadow-sm
+               h-100"
+      >
+
+        <div class="card-body">
+
+          <div
+            class="text-muted
+                   small
+                   mb-2"
+          >
+            Reservas de hoy
+          </div>
+
+
+          <div
+            class="display-6
+                   fw-bold"
+          >
+            {{ resumen.reservasHoy }}
+          </div>
+
+
+          <a
+            routerLink="/admin/reservas"
+            class="small
+                   text-decoration-none"
+          >
+            Ver reservas
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CONFIRMADAS -->
+
+    <div class="col-sm-6 col-xl-3">
+
+      <div
+        class="card
+               border-0
+               shadow-sm
+               h-100"
+      >
+
+        <div class="card-body">
+
+          <div
+            class="text-muted
+                   small
+                   mb-2"
+          >
+            Confirmadas hoy
+          </div>
+
+
+          <div
+            class="display-6
+                   fw-bold
+                   text-success"
+          >
+            {{ resumen.confirmadasHoy }}
+          </div>
+
+
+          <a
+            routerLink="/admin/reservas"
+            class="small
+                   text-decoration-none"
+          >
+            Consultar
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PAGOS -->
+
+    <div class="col-sm-6 col-xl-3">
+
+      <div
+        class="card
+               border-0
+               shadow-sm
+               h-100"
+      >
+
+        <div class="card-body">
+
+          <div
+            class="text-muted
+                   small
+                   mb-2"
+          >
+            Pagos pendientes
+          </div>
+
+
+          <div
+            class="display-6
+                   fw-bold
+                   text-warning"
+          >
+            {{ resumen.pagosPendientes }}
+          </div>
+
+
+          <a
+            routerLink="/admin/pagos"
+            class="small
+                   text-decoration-none"
+          >
+            Revisar pagos
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- INGRESOS -->
+
+    <div class="col-sm-6 col-xl-3">
+
+      <div
+        class="card
+               border-0
+               shadow-sm
+               h-100"
+      >
+
+        <div class="card-body">
+
+          <div
+            class="text-muted
+                   small
+                   mb-2"
+          >
+            Ingresos de hoy
+          </div>
+
+
+          <div
+            class="fs-2
+                   fw-bold
+                   text-success"
+          >
+            S/
+            {{
+              formatearDinero(
+                resumen.ingresosHoy
+              )
+            }}
+          </div>
+
+
+          <div class="small text-muted">
+            Pagos aprobados
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ACCIONES RÁPIDAS -->
+
+  <div class="row g-4 mb-4">
+
+    <div class="col-12">
+
+      <div
+        class="card
+               border-0
+               shadow-sm"
+      >
+
+        <div class="card-body">
+
+          <h5 class="fw-bold mb-3">
+            Acciones rápidas
+          </h5>
+
+
+          <div
+            class="d-flex
+                   flex-wrap
+                   gap-2"
+          >
+
+            <a
+              routerLink="/admin/reserva-presencial"
+              class="btn btn-success"
+            >
+              Nueva reserva
+            </a>
+
+
+            <a
+              routerLink="/admin/pagos"
+              class="btn btn-outline-warning"
+            >
+              Revisar pagos
+            </a>
+
+
+            <a
+              routerLink="/admin/reservas"
+              class="btn btn-outline-primary"
+            >
+              Consultar reservas
+            </a>
+
+
+            <a
+              routerLink="/admin/canchas"
+              class="btn btn-outline-secondary"
+            >
+              Gestionar canchas
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- PRÓXIMAS RESERVAS -->
+
+  <div
+    class="card
+           border-0
+           shadow-sm"
+  >
+
+    <div
+      class="card-header
+             bg-white
+             d-flex
+             justify-content-between
+             align-items-center"
+    >
+
+      <div>
+
+        <h5 class="fw-bold mb-0">
+          Próximas reservas
+        </h5>
+
+        <small class="text-muted">
+          Reservas confirmadas pendientes de atención.
+        </small>
+
+      </div>
+
+
+      <a
+        routerLink="/admin/reservas"
+        class="btn
+               btn-outline-secondary
+               btn-sm"
+      >
+        Ver todas
+      </a>
+
+    </div>
+
+
+    <div class="card-body p-0">
+
+
+      @if (
+        resumen.proximasReservas.length === 0
+      ) {
+
+        <div class="text-center py-5">
+
+          <h6>
+            No hay próximas reservas
+          </h6>
+
+          <p class="text-muted mb-0">
+            No existen reservas confirmadas pendientes.
+          </p>
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table
+                   table-hover
+                   align-middle
+                   mb-0"
+          >
+
+            <thead class="table-light">
+
+              <tr>
+
+                <th>
+                  Reserva
+                </th>
+
+                <th>
+                  Cliente
+                </th>
+
+                <th>
+                  Sede
+                </th>
+
+                <th>
+                  Cancha
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Horario
+                </th>
+
+                <th>
+                  Origen
+                </th>
+
+                <th class="text-end">
+                  Total
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                reserva of resumen.proximasReservas;
+                track reserva.idReserva
+              ) {
+
+                <tr>
+
+                  <td class="fw-semibold">
+                    #{{ reserva.idReserva }}
+                  </td>
+
+
+                  <td>
+                    {{ reserva.nombreCliente }}
+                  </td>
+
+
+                  <td>
+                    {{ reserva.nombreSede }}
+                  </td>
+
+
+                  <td>
+                    {{ reserva.nombreCancha }}
+                  </td>
+
+
+                  <td>
+                    {{ reserva.fechaTurno }}
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      formatearHora(
+                        reserva.horaInicio
+                      )
+                    }}
+
+                    -
+
+                    {{
+                      formatearHora(
+                        reserva.horaFin
+                      )
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="badge
+                             text-bg-light
+                             border"
+                    >
+                      {{ reserva.origen }}
+                    </span>
+
+                  </td>
+
+
+                  <td
+                    class="text-end
+                           fw-semibold"
+                  >
+
+                    S/
+                    {{
+                      formatearDinero(
+                        reserva.total
+                      )
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+}

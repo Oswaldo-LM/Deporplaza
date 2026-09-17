@@ -1,0 +1,360 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <!-- CABECERA -->
+
+    <div class="mb-4">
+
+      <h1 class="fw-bold">
+        Disponibilidad de canchas
+      </h1>
+
+      <p class="text-muted mb-0">
+        Selecciona una sede y una fecha para consultar
+        los horarios disponibles.
+      </p>
+
+    </div>
+
+
+    <!-- FORMULARIO -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+      <div class="card-body p-4">
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="consultar()"
+        >
+
+          <div class="row g-3 align-items-end">
+
+            <!-- SEDE -->
+
+            <div class="col-md-5">
+
+              <label
+                for="sede"
+                class="form-label"
+              >
+                Sede
+              </label>
+
+
+              <select
+                id="sede"
+                class="form-select"
+                formControlName="sedeId"
+              >
+
+                <option [ngValue]="0">
+                  Selecciona una sede
+                </option>
+
+
+                @for (
+                  sede of sedes;
+                  track sede.idSede
+                ) {
+
+                  <option
+                    [ngValue]="sede.idSede"
+                  >
+                    {{ sede.nombre }}
+                  </option>
+
+                }
+
+              </select>
+
+
+              @if (
+                form.controls.sedeId.touched
+                && form.controls.sedeId.invalid
+              ) {
+
+                <div class="text-danger small mt-1">
+                  Selecciona una sede.
+                </div>
+
+              }
+
+            </div>
+
+
+            <!-- FECHA -->
+
+            <div class="col-md-4">
+
+              <label
+                for="fecha"
+                class="form-label"
+              >
+                Fecha
+              </label>
+
+
+              <input
+                id="fecha"
+                type="date"
+                class="form-control"
+                formControlName="fecha"
+                [min]="fechaMin"
+                [max]="fechaMax"
+              >
+
+            </div>
+
+
+            <!-- BOTÓN -->
+
+            <div class="col-md-3">
+
+              <button
+                type="submit"
+                class="btn btn-success w-100"
+                [disabled]="
+                  consultando
+                  || cargandoSedes
+                "
+              >
+
+                @if (consultando) {
+
+                  <span
+                    class="spinner-border
+                           spinner-border-sm
+                           me-2"
+                  ></span>
+
+                  Consultando...
+
+                } @else {
+
+                  Consultar
+
+                }
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    @if (errorMensaje) {
+
+      <div
+        class="alert alert-danger"
+        role="alert"
+      >
+        {{ errorMensaje }}
+      </div>
+
+    }
+
+
+    <!-- RESULTADOS -->
+
+    @if (resultado) {
+
+      <div class="mb-3">
+
+        <h4 class="fw-bold mb-1">
+          {{ resultado.nombreSede }}
+        </h4>
+
+        <div class="text-muted">
+          {{ resultado.fecha }}
+          ·
+          {{ resultado.diaSemana }}
+        </div>
+
+      </div>
+
+
+      @if (resultado.canchas.length === 0) {
+
+        <div class="alert alert-info">
+
+          Esta sede no tiene canchas activas
+          disponibles.
+
+        </div>
+
+      } @else {
+
+        <div class="card border-0 shadow-sm">
+
+          <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+              <table
+                class="table
+                       table-bordered
+                       align-middle
+                       text-center
+                       mb-0"
+              >
+
+                <!-- ENCABEZADO -->
+
+                <thead class="table-light">
+
+                  <tr>
+
+                    <th
+                      class="hora-columna"
+                    >
+                      Hora
+                    </th>
+
+
+                    @for (
+                      cancha of resultado.canchas;
+                      track cancha.idCancha
+                    ) {
+
+                      <th>
+
+                        <div class="fw-bold">
+                          {{ cancha.nombre }}
+                        </div>
+
+                        <div
+                          class="small text-muted"
+                        >
+                          {{ cancha.superficie }}
+                        </div>
+
+                        <div
+                          class="small text-success"
+                        >
+                          S/
+                          {{ cancha.precioHora }}
+                          / hora
+                        </div>
+
+                      </th>
+
+                    }
+
+                  </tr>
+
+                </thead>
+
+
+                <!-- HORARIOS -->
+
+                <tbody>
+
+                  @for (
+                    hora of horas;
+                    track hora
+                  ) {
+
+                    <tr>
+
+                      <th
+                        class="table-light"
+                      >
+                        {{ formatearHora(hora) }}
+                      </th>
+
+
+                      @for (
+                        cancha of resultado.canchas;
+                        track cancha.idCancha
+                      ) {
+
+                        <td>
+
+                          @if (
+                            obtenerBloque(
+                              cancha,
+                              hora
+                            );
+                            as bloque
+                          ) {
+
+                            @if (bloque.disponible) {
+
+                                <button type="button"
+                                  class="btn btn-outline-success
+                                         btn-sm
+                                         w-100"
+                                  (click)="seleccionarHorario(
+                                    cancha,
+                                    bloque
+                                  )">
+
+                                  <div class="fw-bold">
+                                    Diponible
+                                  </div>
+
+                                  <div class="small text-success">
+                                    Hasta
+                                    {{ formatearDuracion(bloque.duracionMaximaMinutos) }}
+                                  </div>
+
+                                </button>
+
+
+                            } @else {
+
+                                
+                              <span
+                                class="badge
+                                       text-bg-secondary"
+                              >
+                                Ocupado
+                              </span>
+
+                            }
+
+                          } @else {
+
+                            <span
+                              class="text-muted"
+                            >
+                              —
+                            </span>
+
+                          }
+
+                        </td>
+
+                      }
+
+                    </tr>
+
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</section>

@@ -1,0 +1,849 @@
+<div class="mb-4">
+
+  <h2 class="fw-bold mb-1">
+    Reservas
+  </h2>
+
+  <p class="text-muted mb-0">
+    Consulta y administra las reservas registradas.
+  </p>
+
+</div>
+
+
+<!-- FILTROS -->
+
+<div class="card border-0 shadow-sm mb-4">
+
+  <div class="card-body">
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="cargarReservas()"
+    >
+
+      <div class="row g-3">
+
+        <!-- ESTADO -->
+
+        <div class="col-md-4 col-xl-2">
+
+          <label class="form-label">
+            Estado
+          </label>
+
+          <select
+            class="form-select"
+            formControlName="estado"
+          >
+
+            <option value="">
+              Todos
+            </option>
+
+
+            @for (
+              estado of estados;
+              track estado
+            ) {
+
+              <option [value]="estado">
+                {{ estado }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- ORIGEN -->
+
+        <div class="col-md-4 col-xl-2">
+
+          <label class="form-label">
+            Origen
+          </label>
+
+          <select
+            class="form-select"
+            formControlName="origen"
+          >
+
+            <option value="">
+              Todos
+            </option>
+
+
+            @for (
+              origen of origenes;
+              track origen
+            ) {
+
+              <option [value]="origen">
+                {{ origen }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- FECHA -->
+
+        <div class="col-md-4 col-xl-2">
+
+          <label class="form-label">
+            Fecha del turno
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            formControlName="fecha"
+          >
+
+        </div>
+
+
+        <!-- SEDE -->
+
+        <div class="col-md-6 col-xl-2">
+
+          <label class="form-label">
+            Sede
+          </label>
+
+          <select
+            class="form-select"
+            formControlName="sedeId"
+          >
+
+            <option [ngValue]="0">
+              Todas
+            </option>
+
+
+            @for (
+              sede of sedes;
+              track sede.idSede
+            ) {
+
+              <option
+                [ngValue]="sede.idSede"
+              >
+                {{ sede.nombre }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- CANCHA -->
+
+        <div class="col-md-6 col-xl-2">
+
+          <label class="form-label">
+            Cancha
+          </label>
+
+          <select
+            class="form-select"
+            formControlName="canchaId"
+            [disabled]="
+              form.controls.sedeId.value === 0
+            "
+          >
+
+            <option [ngValue]="0">
+              Todas
+            </option>
+
+
+            @for (
+              cancha of canchas;
+              track cancha.idCancha
+            ) {
+
+              <option
+                [ngValue]="cancha.idCancha"
+              >
+                {{ cancha.nombre }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div
+          class="col-md-12 col-xl-2
+                 d-flex
+                 align-items-end
+                 gap-2"
+        >
+
+          <button
+            type="submit"
+            class="btn btn-success flex-grow-1"
+            [disabled]="cargando"
+          >
+            Buscar
+          </button>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="limpiarFiltros()"
+            [disabled]="cargando"
+          >
+            Limpiar
+          </button>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- MENSAJES -->
+
+@if (errorMensaje) {
+
+  <div class="alert alert-danger">
+    {{ errorMensaje }}
+  </div>
+
+}
+
+
+@if (exitoMensaje) {
+
+  <div class="alert alert-success">
+    {{ exitoMensaje }}
+  </div>
+
+}
+
+
+<!-- TABLA -->
+
+@if (cargando) {
+
+  <div class="text-center py-5">
+
+    <div class="spinner-border text-success"></div>
+
+    <div class="text-muted mt-3">
+      Cargando reservas...
+    </div>
+
+  </div>
+
+} @else if (reservas.length === 0) {
+
+  <div class="card border-0 shadow-sm">
+
+    <div class="card-body py-5 text-center">
+
+      <h5>
+        No se encontraron reservas
+      </h5>
+
+      <p class="text-muted mb-0">
+        Intenta cambiar los filtros de búsqueda.
+      </p>
+
+    </div>
+
+  </div>
+
+} @else {
+
+  <div class="card border-0 shadow-sm">
+
+    <div class="card-body p-0">
+
+      <div class="table-responsive">
+
+        <table
+          class="table
+                 table-hover
+                 align-middle
+                 mb-0"
+        >
+
+          <thead class="table-light">
+
+            <tr>
+
+              <th>
+                Reserva
+              </th>
+
+              <th>
+                Cliente
+              </th>
+
+              <th>
+                Sede / Cancha
+              </th>
+
+              <th>
+                Fecha
+              </th>
+
+              <th>
+                Horario
+              </th>
+
+              <th>
+                Origen
+              </th>
+
+              <th>
+                Total
+              </th>
+
+              <th>
+                Estado
+              </th>
+
+              <th class="text-end">
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              reserva of reservas;
+              track reserva.idReserva
+            ) {
+
+              <tr>
+
+                <td class="fw-semibold">
+                  #{{ reserva.idReserva }}
+                </td>
+
+
+                <td>
+
+                  <div class="fw-semibold">
+                    {{ reserva.nombreCliente }}
+                  </div>
+
+                  <small class="text-muted">
+                    {{ reserva.tipoDocumento }}
+                    {{ reserva.numDocumento }}
+                  </small>
+
+                </td>
+
+
+                <td>
+
+                  <div>
+                    {{ reserva.nombreSede }}
+                  </div>
+
+                  <small class="text-muted">
+                    {{ reserva.nombreCancha }}
+                  </small>
+
+                </td>
+
+
+                <td>
+                  {{ reserva.fechaTurno }}
+                </td>
+
+
+                <td>
+
+                  {{
+                    formatearHora(
+                      reserva.horaInicio
+                    )
+                  }}
+
+                  -
+
+                  {{
+                    formatearHora(
+                      reserva.horaFin
+                    )
+                  }}
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="badge text-bg-light border"
+                  >
+                    {{ reserva.origen }}
+                  </span>
+
+                </td>
+
+
+                <td class="fw-semibold">
+                  S/ {{ reserva.total }}
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="badge"
+                    [class]="
+                      'badge '
+                      + claseEstado(
+                          reserva.estado
+                        )
+                    "
+                  >
+                    {{ reserva.estado }}
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <div
+                    class="d-flex
+                           justify-content-end
+                           gap-2"
+                  >
+
+                    <button
+                      type="button"
+                      class="btn
+                             btn-outline-primary
+                             btn-sm"
+                      (click)="verDetalle(reserva)"
+                      [disabled]="
+                        procesandoId
+                          === reserva.idReserva
+                      "
+                    >
+                      Ver
+                    </button>
+
+
+                    @if (
+                      puedeCancelar(
+                        reserva
+                      )
+                    ) {
+
+                      <button
+                        type="button"
+                        class="btn
+                               btn-outline-danger
+                               btn-sm"
+                        (click)="cancelar(reserva)"
+                        [disabled]="
+                          procesandoId
+                            === reserva.idReserva
+                        "
+                      >
+
+                        @if (
+                          procesandoId
+                            === reserva.idReserva
+                        ) {
+
+                          <span
+                            class="spinner-border
+                                   spinner-border-sm"
+                          ></span>
+
+                        } @else {
+
+                          Cancelar
+
+                        }
+
+                      </button>
+
+                    }
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+
+<!-- DETALLE -->
+
+@if (cargandoDetalle) {
+
+  <div class="text-center py-4">
+
+    <div
+      class="spinner-border
+             spinner-border-sm
+             text-success"
+    ></div>
+
+    <span class="ms-2">
+      Cargando detalle...
+    </span>
+
+  </div>
+
+}
+
+
+@if (reservaSeleccionada) {
+
+  <div class="card border-0 shadow-sm mt-4">
+
+    <div
+      class="card-header
+             bg-white
+             d-flex
+             justify-content-between
+             align-items-center"
+    >
+
+      <div>
+
+        <h5 class="mb-0 fw-bold">
+          Reserva
+          #{{ reservaSeleccionada.idReserva }}
+        </h5>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn-close"
+        (click)="cerrarDetalle()"
+      ></button>
+
+    </div>
+
+
+    <div class="card-body">
+
+      <div class="row g-4">
+
+
+        <!-- CLIENTE -->
+
+        <div class="col-lg-4">
+
+          <h6 class="fw-bold">
+            Cliente
+          </h6>
+
+          <dl class="row small">
+
+            <dt class="col-5">
+              Nombre
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.nombreCliente }}
+            </dd>
+
+
+            <dt class="col-5">
+              Documento
+            </dt>
+
+            <dd class="col-7">
+
+              {{
+                reservaSeleccionada.tipoDocumento
+              }}
+
+              {{
+                reservaSeleccionada.numDocumento
+              }}
+
+            </dd>
+
+
+            <dt class="col-5">
+              Email
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.emailCliente }}
+            </dd>
+
+
+            <dt class="col-5">
+              Teléfono
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.telefonoCliente }}
+            </dd>
+
+          </dl>
+
+        </div>
+
+
+        <!-- TURNO -->
+
+        <div class="col-lg-4">
+
+          <h6 class="fw-bold">
+            Turno
+          </h6>
+
+          <dl class="row small">
+
+            <dt class="col-5">
+              Sede
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.nombreSede }}
+            </dd>
+
+
+            <dt class="col-5">
+              Cancha
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.nombreCancha }}
+            </dd>
+
+
+            <dt class="col-5">
+              Superficie
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.superficie }}
+            </dd>
+
+
+            <dt class="col-5">
+              Fecha
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.fechaTurno }}
+            </dd>
+
+
+            <dt class="col-5">
+              Horario
+            </dt>
+
+            <dd class="col-7">
+
+              {{
+                formatearHora(
+                  reservaSeleccionada.horaInicio
+                )
+              }}
+
+              -
+
+              {{
+                formatearHora(
+                  reservaSeleccionada.horaFin
+                )
+              }}
+
+            </dd>
+
+
+            <dt class="col-5">
+              Extras
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.cantidadExtras }}
+            </dd>
+
+          </dl>
+
+        </div>
+
+
+        <!-- PAGO/RESERVA -->
+
+        <div class="col-lg-4">
+
+          <h6 class="fw-bold">
+            Reserva y pago
+          </h6>
+
+          <dl class="row small">
+
+            <dt class="col-5">
+              Origen
+            </dt>
+
+            <dd class="col-7">
+              {{ reservaSeleccionada.origen }}
+            </dd>
+
+
+            <dt class="col-5">
+              Estado
+            </dt>
+
+            <dd class="col-7">
+
+              <span
+                class="badge"
+                [class]="
+                  'badge '
+                  + claseEstado(
+                      reservaSeleccionada.estado
+                    )
+                "
+              >
+                {{ reservaSeleccionada.estado }}
+              </span>
+
+            </dd>
+
+
+            <dt class="col-5">
+              Precio/h
+            </dt>
+
+            <dd class="col-7">
+              S/ {{ reservaSeleccionada.precioHora }}
+            </dd>
+
+
+            <dt class="col-5">
+              Total
+            </dt>
+
+            <dd class="col-7 fw-bold">
+              S/ {{ reservaSeleccionada.total }}
+            </dd>
+
+
+            <dt class="col-5">
+              Pago
+            </dt>
+
+            <dd class="col-7">
+
+              @if (
+                reservaSeleccionada.idPago
+              ) {
+
+                #{{ reservaSeleccionada.idPago }}
+                -
+                {{ reservaSeleccionada.estadoPago }}
+
+              } @else {
+
+                Sin pago
+
+              }
+
+            </dd>
+
+
+            <dt class="col-5">
+              Registrada
+            </dt>
+
+            <dd class="col-7">
+
+              {{
+                formatearFechaHora(
+                  reservaSeleccionada.fechaRegistro
+                )
+              }}
+
+            </dd>
+
+          </dl>
+
+        </div>
+
+      </div>
+
+
+      @if (
+        puedeCancelar(
+          reservaSeleccionada
+        )
+      ) {
+
+        <hr>
+
+
+        <div class="text-end">
+
+          <button
+            type="button"
+            class="btn btn-outline-danger"
+            (click)="cancelar(
+              reservaSeleccionada
+            )"
+            [disabled]="
+              procesandoId
+                === reservaSeleccionada.idReserva
+            "
+          >
+            Cancelar reserva
+          </button>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+}

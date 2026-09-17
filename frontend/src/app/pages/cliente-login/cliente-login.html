@@ -1,0 +1,190 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="row justify-content-center">
+
+      <div class="col-md-7 col-lg-5">
+
+        <div class="text-center mb-4">
+
+          <h1 class="h3 fw-bold">
+            Iniciar sesión
+          </h1>
+
+          <p class="text-muted">
+            Accede a tu cuenta de DeporPlaza.
+          </p>
+
+        </div>
+
+
+        <div class="card border-0 shadow-sm">
+
+          <div class="card-body p-4 p-lg-5">
+
+
+            @if (errorMensaje) {
+
+              <div class="alert alert-danger">
+                {{ errorMensaje }}
+              </div>
+
+            }
+
+
+            <form
+              [formGroup]="form"
+              (ngSubmit)="iniciarSesion()"
+            >
+
+              <div class="mb-3">
+
+                <label class="form-label">
+                  Correo electrónico
+                </label>
+
+                <input
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                  autocomplete="username"
+                  placeholder="cliente@correo.com"
+                >
+
+
+                @if (
+                  form.controls.email.touched
+                  &&
+                  form.controls.email.invalid
+                ) {
+
+                  <div class="text-danger small mt-1">
+
+                    @if (
+                      form.controls.email.hasError(
+                        'required'
+                      )
+                    ) {
+
+                      El correo es obligatorio.
+
+                    } @else {
+
+                      Ingresa un correo válido.
+
+                    }
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <div class="mb-4">
+
+                <label class="form-label">
+                  Contraseña
+                </label>
+
+                <input
+                  type="password"
+                  class="form-control"
+                  formControlName="password"
+                  autocomplete="current-password"
+                  placeholder="Contraseña"
+                >
+
+
+                @if (
+                  form.controls.password.touched
+                  &&
+                  form.controls.password.invalid
+                ) {
+
+                  <div class="text-danger small mt-1">
+                    La contraseña es obligatoria.
+                  </div>
+
+                }
+
+              </div>
+
+
+              <button
+                type="submit"
+                class="btn btn-success btn-lg w-100"
+                [disabled]="cargando"
+              >
+
+                @if (cargando) {
+
+                  <span
+                    class="spinner-border spinner-border-sm me-2"
+                    aria-hidden="true"
+                  ></span>
+
+                  Iniciando sesión...
+
+                } @else {
+
+                  Iniciar sesión
+
+                }
+
+              </button>
+
+            </form>
+
+
+            <hr class="my-4">
+
+
+            <div class="text-center">
+
+              <span class="text-muted">
+                ¿No tienes una cuenta?
+              </span>
+
+              <a
+                routerLink="/cliente/registro"
+                class="text-decoration-none ms-1"
+              >
+                Registrarse
+              </a>
+
+            </div>
+
+
+            <div class="text-center mt-3">
+
+              <small class="text-muted">
+                También puedes reservar sin crear una cuenta.
+              </small>
+
+            </div>
+
+
+            <div class="text-center mt-3">
+
+              <a
+                routerLink="/"
+                class="text-decoration-none"
+              >
+                Volver al inicio
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

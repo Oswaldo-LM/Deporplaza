@@ -1,0 +1,336 @@
+<section class="py-5">
+
+  <div class="container">
+
+    <div
+      class="d-flex
+             justify-content-between
+             align-items-center
+             flex-wrap
+             gap-3
+             mb-4"
+    >
+
+      <div>
+
+        <h1 class="h3 fw-bold mb-1">
+          Mis reservas
+        </h1>
+
+        <p class="text-muted mb-0">
+          Consulta tus reservas realizadas en DeporPlaza.
+        </p>
+
+      </div>
+
+
+      <a
+        routerLink="/reserva"
+        class="btn btn-success"
+      >
+        Nueva reserva
+      </a>
+
+    </div>
+
+
+    @if (cargando) {
+
+      <div
+        class="text-center py-5"
+      >
+
+        <div
+          class="spinner-border text-success"
+          role="status"
+        ></div>
+
+        <p class="text-muted mt-3">
+          Cargando reservas...
+        </p>
+
+      </div>
+
+    } @else if (errorMensaje) {
+
+      <div class="alert alert-danger">
+
+        {{ errorMensaje }}
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        (click)="cargarReservas()"
+      >
+        Intentar nuevamente
+      </button>
+
+    } @else if (reservas.length === 0) {
+
+      <div
+        class="card border-0 shadow-sm"
+      >
+
+        <div
+          class="card-body
+                 text-center
+                 py-5"
+        >
+
+          <h2 class="h5">
+            Aún no tienes reservas
+          </h2>
+
+          <p class="text-muted">
+            Cuando realices una reserva aparecerá aquí.
+          </p>
+
+
+          <a
+            routerLink="/disponibilidad"
+            class="btn btn-success"
+          >
+            Consultar disponibilidad
+          </a>
+
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="row g-4">
+
+        @for (
+          reserva of reservas;
+          track reserva.idReserva
+        ) {
+
+          <div class="col-12">
+
+            <div
+              class="card
+                     border-0
+                     shadow-sm"
+            >
+
+              <div class="card-body p-4">
+
+                <div
+                  class="d-flex
+                         justify-content-between
+                         align-items-start
+                         flex-wrap
+                         gap-3
+                         mb-3"
+                >
+
+                  <div>
+
+                    <h2 class="h5 mb-1">
+
+                      Reserva #{{ reserva.idReserva }}
+
+                    </h2>
+
+                    <span class="text-muted">
+
+                      {{
+                        formatearFecha(
+                          reserva.fechaTurno
+                        )
+                      }}
+
+                    </span>
+
+                  </div>
+
+
+                  <span
+                    class="badge"
+                    [class]="estadoClase(
+                      reserva.estado
+                    )"
+                  >
+
+                    {{
+                      estadoTexto(
+                        reserva.estado
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+
+                <div class="row g-3">
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Sede
+                    </small>
+
+                    <strong>
+                      {{ reserva.nombreSede }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Cancha
+                    </small>
+
+                    <strong>
+                      {{ reserva.nombreCancha }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Origen
+                    </small>
+
+                    <strong>
+                      {{
+                        reserva.origen === 'WEB'
+                          ? 'Web'
+                          : 'Presencial'
+                      }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Horario
+                    </small>
+
+                    <strong>
+
+                      {{
+                        formatearHora(
+                          reserva.horaInicio
+                        )
+                      }}
+
+                      -
+
+                      {{
+                        formatearHora(
+                          reserva.horaFin
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Duración
+                    </small>
+
+                    <strong>
+
+                      {{
+                        reserva.duracionMinutos
+                      }}
+                      minutos
+
+                    </strong>
+
+                  </div>
+
+
+                  <div class="col-md-4">
+
+                    <small class="text-muted d-block">
+                      Total
+                    </small>
+
+                    <strong>
+
+                      {{
+                        formatearMonto(
+                          reserva.total
+                        )
+                      }}
+
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                @if (
+                  reserva.estado ===
+                  'PENDIENTE_PAGO'
+                ) {
+
+                  <div
+                    class="alert alert-warning mt-4 mb-0"
+                  >
+
+                    Esta reserva está pendiente de pago.
+
+                    <a
+                      [routerLink]="[
+                        '/pago',
+                        reserva.idReserva
+                      ]"
+                      class="alert-link ms-1"
+                    >
+                      Realizar pago
+                    </a>
+
+                  </div>
+
+                }
+
+
+                @if (
+                  reserva.estado ===
+                  'PENDIENTE_CONFIRMACION'
+                ) {
+
+                  <div
+                    class="alert alert-info mt-4 mb-0"
+                  >
+
+                    Tu comprobante fue enviado y está pendiente de validación.
+
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </div>
+
+</section>

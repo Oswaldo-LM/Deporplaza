@@ -1,0 +1,37 @@
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+
+  background-color: #212529;
+  color: white;
+}
+
+
+.sidebar .nav-link {
+  color: #adb5bd;
+  border-radius: 0.375rem;
+}
+
+
+.sidebar .nav-link:hover {
+  color: white;
+  background-color: #343a40;
+}
+
+
+.sidebar .nav-link.active {
+  color: white;
+  background-color: #198754;
+}
+
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}

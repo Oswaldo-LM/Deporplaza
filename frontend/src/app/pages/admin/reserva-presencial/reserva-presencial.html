@@ -1,0 +1,788 @@
+<div class="mb-4">
+
+  <h2 class="fw-bold mb-1">
+    Reserva presencial
+  </h2>
+
+  <p class="text-muted mb-0">
+    Registra una reserva realizada directamente en el local.
+  </p>
+
+</div>
+
+
+@if (errorMensaje) {
+
+  <div class="alert alert-danger">
+    {{ errorMensaje }}
+  </div>
+
+}
+
+
+@if (exitoMensaje) {
+
+  <div class="alert alert-success">
+    {{ exitoMensaje }}
+  </div>
+
+}
+
+
+@if (reservaCreada) {
+
+  <!-- RESULTADO -->
+
+  <div class="card border-success shadow-sm">
+
+    <div class="card-body p-4">
+
+      <h4 class="text-success fw-bold">
+        Reserva registrada
+      </h4>
+
+      <p>
+        La reserva presencial fue confirmada correctamente.
+      </p>
+
+
+      <div class="row g-3">
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Reserva
+          </div>
+
+          <strong>
+            #{{ reservaCreada.idReserva }}
+          </strong>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Cliente
+          </div>
+
+          <strong>
+            {{ reservaCreada.nombreCliente }}
+          </strong>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Cancha
+          </div>
+
+          <strong>
+            {{ reservaCreada.nombreCancha }}
+          </strong>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Total
+          </div>
+
+          <strong class="text-success">
+            S/ {{ reservaCreada.total }}
+          </strong>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Fecha
+          </div>
+
+          <span>
+            {{ reservaCreada.fechaTurno }}
+          </span>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Horario
+          </div>
+
+          <span>
+
+            {{
+              formatearHora(
+                reservaCreada.horaInicio
+              )
+            }}
+
+            -
+
+            {{
+              formatearHora(
+                reservaCreada.horaFin
+              )
+            }}
+
+          </span>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Estado
+          </div>
+
+          <span class="badge text-bg-success">
+            {{ reservaCreada.estado }}
+          </span>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+          <div class="text-muted small">
+            Origen
+          </div>
+
+          <span class="badge text-bg-light border">
+            {{ reservaCreada.origen }}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <hr>
+
+
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="nuevaReserva()"
+      >
+        Registrar otra reserva
+      </button>
+
+    </div>
+
+  </div>
+
+} @else {
+
+
+  <!-- PASO 1: DISPONIBILIDAD -->
+
+  <div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-header bg-white">
+
+      <h5 class="mb-0 fw-bold">
+        1. Seleccionar horario
+      </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+      <form
+        [formGroup]="filtroForm"
+        (ngSubmit)="consultarDisponibilidad()"
+      >
+
+        <div class="row g-3 align-items-end">
+
+          <div class="col-md-5">
+
+            <label class="form-label">
+              Sede
+            </label>
+
+            <select
+              class="form-select"
+              formControlName="sedeId"
+            >
+
+              <option [ngValue]="0">
+                Selecciona una sede
+              </option>
+
+              @for (
+                sede of sedes;
+                track sede.idSede
+              ) {
+
+                <option
+                  [ngValue]="sede.idSede"
+                >
+                  {{ sede.nombre }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Fecha
+            </label>
+
+            <input
+              type="date"
+              class="form-control"
+              formControlName="fecha"
+              [min]="fechaMin"
+              [max]="fechaMax"
+            >
+
+          </div>
+
+
+          <div class="col-md-3">
+
+            <button
+              type="submit"
+              class="btn btn-success w-100"
+              [disabled]="consultando"
+            >
+
+              @if (consultando) {
+
+                <span
+                  class="spinner-border
+                         spinner-border-sm
+                         me-2"
+                ></span>
+
+                Consultando...
+
+              } @else {
+
+                Consultar disponibilidad
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </form>
+
+
+      @if (disponibilidad) {
+
+        <hr class="my-4">
+
+
+        @if (
+          disponibilidad.canchas.length === 0
+        ) {
+
+          <div class="alert alert-info mb-0">
+            No hay canchas activas para esta sede.
+          </div>
+
+        } @else {
+
+          @for (
+            cancha of disponibilidad.canchas;
+            track cancha.idCancha
+          ) {
+
+            <div class="mb-4">
+
+              <div
+                class="d-flex
+                       justify-content-between
+                       align-items-center
+                       mb-2"
+              >
+
+                <div>
+
+                  <strong>
+                    {{ cancha.nombre }}
+                  </strong>
+
+                  <span
+                    class="text-muted ms-2"
+                  >
+                    {{ cancha.superficie }}
+                  </span>
+
+                </div>
+
+
+                <span class="text-success fw-semibold">
+
+                  S/ {{ cancha.precioHora }}
+                  / hora
+
+                </span>
+
+              </div>
+
+
+              @if (!cancha.tieneHorario) {
+
+                <div class="text-muted">
+                  Sin atención este día.
+                </div>
+
+              } @else {
+
+                <div class="horarios-grid">
+
+                  @for (
+                    bloque of cancha.bloques;
+                    track bloque.horaInicio
+                  ) {
+
+                    @if (bloque.disponible) {
+
+                      <button
+                        type="button"
+                        class="btn btn-sm"
+                        [class.btn-success]="
+                          canchaSeleccionada?.idCancha
+                            === cancha.idCancha
+                          &&
+                          bloqueSeleccionado?.horaInicio
+                            === bloque.horaInicio
+                        "
+                        [class.btn-outline-success]="
+                          !(
+                            canchaSeleccionada?.idCancha
+                              === cancha.idCancha
+                            &&
+                            bloqueSeleccionado?.horaInicio
+                              === bloque.horaInicio
+                          )
+                        "
+                        (click)="
+                          seleccionarBloque(
+                            cancha,
+                            bloque
+                          )
+                        "
+                      >
+
+                        {{
+                          formatearHora(
+                            bloque.horaInicio
+                          )
+                        }}
+
+                      </button>
+
+                    }
+
+                  }
+
+                </div>
+
+              }
+
+            </div>
+
+          }
+
+        }
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- PASO 2 -->
+
+  @if (
+    canchaSeleccionada
+    && bloqueSeleccionado
+  ) {
+
+    <div class="card border-0 shadow-sm">
+
+      <div class="card-header bg-white">
+
+        <div
+          class="d-flex
+                 justify-content-between
+                 align-items-center"
+        >
+
+          <h5 class="mb-0 fw-bold">
+            2. Datos de la reserva
+          </h5>
+
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="quitarSeleccion()"
+          >
+            Cambiar horario
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="card-body">
+
+        <!-- RESUMEN -->
+
+        <div class="alert alert-light border">
+
+          <div class="row">
+
+            <div class="col-md-3">
+
+              <small class="text-muted">
+                Cancha
+              </small>
+
+              <div class="fw-semibold">
+                {{ canchaSeleccionada.nombre }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+              <small class="text-muted">
+                Fecha
+              </small>
+
+              <div>
+                {{ filtroForm.controls.fecha.value }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+              <small class="text-muted">
+                Inicio
+              </small>
+
+              <div>
+                {{
+                  formatearHora(
+                    bloqueSeleccionado.horaInicio
+                  )
+                }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+              <small class="text-muted">
+                Precio/hora
+              </small>
+
+              <div>
+                S/ {{ canchaSeleccionada.precioHora }}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <form
+          [formGroup]="reservaForm"
+          (ngSubmit)="registrarReserva()"
+        >
+
+          <!-- DURACIÓN -->
+
+          <h6 class="fw-bold mt-4">
+            Duración
+          </h6>
+
+
+          <div class="row g-3 mb-4">
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Tiempo de reserva
+              </label>
+
+              <select
+                class="form-select"
+                formControlName="cantidadExtras"
+              >
+
+                @for (
+                  extras of obtenerOpcionesExtras();
+                  track extras
+                ) {
+
+                  <option
+                    [ngValue]="extras"
+                  >
+                    {{
+                      obtenerDuracionTexto(
+                        extras
+                      )
+                    }}
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Total
+              </label>
+
+              <div
+                class="form-control
+                       bg-light
+                       fw-bold
+                       text-success"
+              >
+                S/ {{ calcularTotal() }}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <hr>
+
+
+          <!-- CLIENTE -->
+
+          <h6 class="fw-bold">
+            Datos del cliente
+          </h6>
+
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Nombre completo
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="nombreCompleto"
+              >
+
+            </div>
+
+
+            <div class="col-md-2">
+
+              <label class="form-label">
+                Tipo
+              </label>
+
+              <select
+                class="form-select"
+                formControlName="tipoDocumento"
+              >
+
+                @for (
+                  tipo of tiposDocumento;
+                  track tipo
+                ) {
+
+                  <option [value]="tipo">
+                    {{ tipo }}
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <label class="form-label">
+                Documento
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="numDocumento"
+              >
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Email
+              </label>
+
+              <input
+                type="email"
+                class="form-control"
+                formControlName="email"
+              >
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Teléfono
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="telefono"
+              >
+
+            </div>
+
+          </div>
+
+
+          <hr class="my-4">
+
+
+          <!-- PAGO -->
+
+          <h6 class="fw-bold">
+            Pago
+          </h6>
+
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Método de pago
+              </label>
+
+              <select
+                class="form-select"
+                formControlName="metodoPago"
+              >
+
+                @for (
+                  metodo of metodosPago;
+                  track metodo
+                ) {
+
+                  <option [value]="metodo">
+                    {{ metodo }}
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Número de operación
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="numOperacion"
+              >
+
+              <div class="form-text">
+                Opcional para pagos en efectivo.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="text-end mt-4">
+
+            <button
+              type="submit"
+              class="btn btn-success btn-lg"
+              [disabled]="guardando"
+            >
+
+              @if (guardando) {
+
+                <span
+                  class="spinner-border
+                         spinner-border-sm
+                         me-2"
+                ></span>
+
+                Registrando...
+
+              } @else {
+
+                Registrar reserva presencial
+
+              }
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+}

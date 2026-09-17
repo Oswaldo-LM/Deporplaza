@@ -1,0 +1,149 @@
+<nav
+  class="navbar
+         navbar-expand-lg
+         bg-dark
+         navbar-dark"
+>
+
+  <div class="container">
+
+    <!-- LOGO -->
+    <a
+      class="navbar-brand fw-semibold"
+      routerLink="/"
+    >
+      DeporPlaza
+    </a>
+
+
+    <!-- MENÚ -->
+    <div
+      class="d-flex
+             align-items-center
+             gap-3
+             ms-auto"
+    >
+
+      <!-- INICIO -->
+      <a
+        class="nav-link text-white"
+        routerLink="/"
+        routerLinkActive="fw-bold"
+        [routerLinkActiveOptions]="{
+          exact: true
+        }"
+      >
+        Inicio
+      </a>
+
+
+      <!-- DISPONIBILIDAD -->
+      <a
+        class="nav-link text-white"
+        routerLink="/disponibilidad"
+        routerLinkActive="fw-bold"
+      >
+        Disponibilidad
+      </a>
+
+
+      <!-- RESERVAR -->
+      <a
+        class="btn btn-success btn-sm"
+        routerLink="/reserva"
+      >
+        Reservar
+      </a>
+
+
+      <!-- CLIENTE AUTENTICADO -->
+      @if (
+        authService.esCliente()
+      ) {
+
+        <a
+          class="nav-link text-white"
+          routerLink="/cliente/mis-reservas"
+          routerLinkActive="fw-bold"
+        >
+          Mis reservas
+        </a>
+
+
+        <span class="text-light">
+
+          Hola,
+          <strong>
+            {{
+              authService
+                .obtenerUsuario()
+                ?.nombre
+            }}
+          </strong>
+
+        </span>
+
+
+        <button
+          type="button"
+          class="btn
+                 btn-outline-light
+                 btn-sm"
+          (click)="cerrarSesionCliente()"
+        >
+          Cerrar sesión
+        </button>
+
+      }
+
+      <!-- CLIENTE NO AUTENTICADO -->
+      @else {
+
+        <a
+          class="nav-link text-white"
+          routerLink="/cliente/login"
+          routerLinkActive="fw-bold"
+        >
+          Iniciar sesión
+        </a>
+
+
+        <a
+          class="btn
+                 btn-outline-light
+                 btn-sm"
+          routerLink="/cliente/registro"
+        >
+          Registrarse
+        </a>
+
+      }
+
+    </div>
+
+  </div>
+
+</nav>
+
+
+<main>
+
+  <router-outlet />
+
+</main>
+
+
+<footer class="border-top bg-white mt-5">
+
+  <div
+    class="container
+           py-4
+           text-center
+           text-muted"
+  >
+
+    Sistema Web de Control de Turnos y Reservas
+
+  </div>
+
+</footer>
