@@ -21,19 +21,27 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ]
-          },
+  "browser": "src/main.ts",
+  "tsConfig": "tsconfig.app.json",
+  "inlineStyleLanguage": "scss",
+  "assets": [
+    {
+      "glob": "**/*",
+      "input": "public"
+    }
+  ],
+  "styles": [
+    "src/styles.scss"
+  ],
+  "scripts": [
+    "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+  ],
+  "stylePreprocessorOptions": {
+    "includePaths": [
+      "src/styles"
+    ]
+  }
+},
           "configurations": {
             "production": {
               "fileReplacements": [
@@ -55,8 +63,6 @@
                 }
               ],
               "outputHashing": "all"
-
-              
             },
             "development": {
               "optimization": false,

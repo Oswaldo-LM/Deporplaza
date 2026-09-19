@@ -1,71 +1,218 @@
-<section class="py-5">
+<!-- CARRUSEL -->
+<div #heroCarousel id="heroCarousel" class="carousel slide carousel-fade hero-carousel" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
 
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="img/cancha-1.jpg" alt="Cancha DeporPlaza">
+      <div class="carousel-caption">
+        <h2>Reserva tu cancha en minutos</h2>
+        <p>Disponibilidad en tiempo real, todos los días.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/img-2.png" alt="Cancha DeporPlaza">
+      <div class="carousel-caption">
+        <h2>Césped en excelente estado</h2>
+        <p>Iluminación profesional para partidos nocturnos.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="img/img-1.jpg" alt="Cancha DeporPlaza">
+      <div class="carousel-caption">
+        <h2>Confirmación inmediata</h2>
+        <p>Recibe tu comprobante digital al instante.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  </button>
+</div>
+
+<!-- HERO (texto + CTA, debajo del carrusel) -->
+<section class="hero-section py-5">
   <div class="container">
-
-    <div class="row align-items-center py-5">
+    <div class="row align-items-center py-4">
 
       <div class="col-lg-7">
 
-        <span class="badge text-bg-success mb-3">
-          Reservas deportivas
-        </span>
+        <div class="live-badge mb-3">
+          <span class="pulse-dot"></span>
+          Reservas deportivas online
+        </div>
 
         <h1 class="display-4 fw-bold mb-3">
-          Reserva tu cancha de manera rápida
+          Reserva tu cancha de manera <span class="text-primary">rápida y sin complicaciones</span>
         </h1>
 
         <p class="lead text-muted mb-4">
-          Consulta horarios disponibles y realiza tu reserva
-          de fútbol en línea.
+          Consulta horarios disponibles en tiempo real y realiza tu reserva de fútbol en línea, sin llamadas ni esperas.
         </p>
 
-        <a
-          routerLink="/disponibilidad"
-          class="btn btn-success btn-lg"
-        >
-          Ver disponibilidad
-        </a>
+        <div class="d-flex flex-wrap gap-3">
+          <a routerLink="/disponibilidad" class="btn btn-primary btn-lg px-4">
+            <i class="bi bi-calendar-check"></i> Ver disponibilidad
+          </a>
+          <a routerLink="/reserva" class="btn btn-outline-dark btn-lg px-4">
+            <i class="bi bi-plus-circle"></i> Reservar ahora
+          </a>
+        </div>
+
+        <div class="d-flex flex-wrap gap-4 mt-4 perk-list">
+          <span><i class="bi bi-check-circle-fill text-primary"></i> Confirmación inmediata</span>
+          <span><i class="bi bi-check-circle-fill text-primary"></i> Comprobante digital</span>
+        </div>
 
       </div>
 
       <div class="col-lg-5 mt-5 mt-lg-0">
-
-        <div class="card shadow-sm border-0">
-
+        <div class="card shadow-sm border-0 how-it-works-card">
           <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">¿Cómo funciona?</h5>
 
-            <h5 class="fw-bold">
-              ¿Cómo funciona?
-            </h5>
-
-            <ol class="mb-0 mt-3">
-
-              <li class="mb-2">
-                Selecciona una sede.
-              </li>
-
-              <li class="mb-2">
-                Elige la fecha y cancha.
-              </li>
-
-              <li class="mb-2">
-                Selecciona un horario.
-              </li>
-
-              <li>
-                Registra tu reserva y comprobante.
-              </li>
-
-            </ol>
-
+            <div class="step-row">
+              <span class="step-number">1</span>
+              <span>Selecciona una sede.</span>
+            </div>
+            <div class="step-row">
+              <span class="step-number">2</span>
+              <span>Elige la fecha y cancha.</span>
+            </div>
+            <div class="step-row">
+              <span class="step-number">3</span>
+              <span>Selecciona un horario.</span>
+            </div>
+            <div class="step-row">
+              <span class="step-number">4</span>
+              <span>Registra tu reserva y comprobante.</span>
+            </div>
           </div>
-
         </div>
+      </div>
 
+    </div>
+  </div>
+</section>
+
+
+<!-- GALERÍA DE LA CANCHA -->
+<section class="py-5 bg-light-section">
+  <div class="container">
+
+    <div class="section-title">
+      <span class="eyebrow"><i class="bi bi-trophy"></i> Instalaciones</span>
+      <h2>Conoce nuestra cancha</h2>
+      <p class="text-muted">
+        Césped en excelentes condiciones, buena iluminación y todo lo necesario para tu partido.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="gallery-card">
+          <img src="img/cancha-1.jpg" alt="Vista de la cancha DeporPlaza">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="gallery-card">
+          <img src="img/cancha-2.jpg" alt="Vista de la cancha DeporPlaza">
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-4">
+        <div class="spec-badge">
+          <div class="spec-badge-icon">
+            <i class="bi bi-aspect-ratio"></i>
+          </div>
+          <div>
+            <span class="spec-badge-value">42m x 25m</span>
+            <span class="spec-badge-label">Medidas de la cancha</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PASOS DETALLADOS -->
+<section class="py-5">
+  <div class="container">
+
+    <div class="section-title">
+      <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Simple y rápido</span>
+      <h2>¿Cómo funciona el sistema de reserva?</h2>
+      <p class="text-muted">
+        Olvídate de coordinar por llamadas. Reserva tu partido en 4 simples pasos.
+      </p>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-3">
+        <div class="process-card">
+          <div class="process-icon">
+            <span class="process-number">1</span>
+            <i class="bi bi-geo-alt"></i>
+          </div>
+          <h6 class="fw-bold">Elige sede y fecha</h6>
+          <p class="text-muted small mb-0">
+            Consulta la disponibilidad en vivo y selecciona el día que prefieras.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="process-card">
+          <div class="process-icon">
+            <span class="process-number">2</span>
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h6 class="fw-bold">Selecciona un horario</h6>
+          <p class="text-muted small mb-0">
+            Elige el horario disponible que mejor le quede a tu equipo.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="process-card">
+          <div class="process-icon">
+            <span class="process-number">3</span>
+            <i class="bi bi-person-check"></i>
+          </div>
+          <h6 class="fw-bold">Completa tus datos</h6>
+          <p class="text-muted small mb-0">
+            Regístrate o continúa como invitado para confirmar tu reserva.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="process-card">
+          <div class="process-icon">
+            <span class="process-number">4</span>
+            <i class="bi bi-receipt"></i>
+          </div>
+          <h6 class="fw-bold">Recibe tu comprobante</h6>
+          <p class="text-muted small mb-0">
+            Guarda tu comprobante de reserva y preséntalo el día de tu partido.
+          </p>
+        </div>
       </div>
 
     </div>
 
   </div>
-
 </section>
