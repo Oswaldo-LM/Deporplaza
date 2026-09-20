@@ -1,37 +1,158 @@
+$color-naranja: #FF9800;
+$color-oscuro: #0f172a; /* Un azul noche muy oscuro, más elegante que el gris/negro puro */
+$color-oscuro-hover: #1e293b;
+$color-fondo: #f8fafc;
+
 .admin-container {
   display: flex;
   min-height: 100vh;
+  background-color: $color-fondo;
 }
 
-
+/* --- SIDEBAR --- */
 .sidebar {
-  width: 240px;
+  width: 260px;
   flex-shrink: 0;
-
-  background-color: #212529;
+  background-color: #0f172a !important; /* El !important fuerza el fondo oscuro */
   color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
+.brand-header {
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1.5rem;
+
+  /* Contenedor que alinea el balón y las letras lado a lado */
+  .custom-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Espacio entre el balón y el texto */
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.03); /* Pequeña animación al pasar el cursor */
+    }
+  }
+
+  /* Estilos solo para el ícono del balón */
+  .sidebar-logo-icon {
+    height: 60px; /* Ajusta este valor si lo quieres más grande o pequeño */
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Estilos para apilar las palabras Depor y Plaza */
+  .logo-typography {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.05; /* Las junta verticalmente como en tu logo original */
+  }
+
+  /* Tipografía blanca para que resalte en el fondo oscuro */
+  .text-depor, .text-plaza {
+    color: #ffffff; 
+    font-weight: 800;
+    font-size: 1.8rem; /* Tamaño de la letra */
+    letter-spacing: -1px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía limpia y gruesa */
+  }
+
+  .brand-title {
+    color: #FF9800; /* Naranja para la palabra Administración */
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+}
+
+.nav {
+  padding: 0 1rem;
+}
 
 .sidebar .nav-link {
-  color: #adb5bd;
-  border-radius: 0.375rem;
+  color: #94a3b8;
+  border-radius: 10px; /* Estilo píldora flotante */
+  padding: 0.85rem 1.2rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    color: white;
+    background-color: $color-oscuro-hover;
+    transform: translateX(5px);
+  }
+
+  &.active {
+    color: white;
+    background-color: $color-naranja;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+    font-weight: 600;
+  }
 }
 
-
-.sidebar .nav-link:hover {
-  color: white;
-  background-color: #343a40;
-}
-
-
-.sidebar .nav-link.active {
-  color: white;
-  background-color: #198754;
-}
-
-
+/* --- HEADER Y MAIN --- */
 .main-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-header {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.user-info {
+  font-size: 0.95rem;
+}
+
+.btn-logout {
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    transform: translateY(-1px);
+  }
+}
+
+.content-area {
+  flex: 1;
+  padding: 2.5rem;
+  overflow-y: auto;
 }

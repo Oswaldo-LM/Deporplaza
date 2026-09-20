@@ -1,54 +1,37 @@
 <div class="admin-container">
 
+  <!-- BARRA LATERAL (Sidebar) -->
   <aside class="sidebar">
-
-    <div class="p-3 border-bottom border-secondary">
-
-      <h5 class="mb-0">
-        DeporPlaza
-      </h5>
-
-      <small class="text-secondary">
-        Administración
-      </small>
-
+    
+   <div class="brand-header">
+  
+  <!-- Nuevo logo combinado (Ícono + Texto HTML) -->
+  <div class="custom-logo">
+    <!-- Asegúrate de que la extensión sea correcta (.png o .jpg) -->
+    <img src="/img/logo-sintexto.png" alt="Balón DeporPlaza" class="sidebar-logo-icon">
+    
+    <div class="logo-typography">
+      <span class="text-depor">Depor</span>
+      <span class="text-plaza">Plaza</span>
     </div>
+  </div>
 
+  <h6 class="brand-title mt-4">Administración</h6>
 
-    <nav class="nav flex-column p-3 gap-1">
+</div>
 
-      <a
-        class="nav-link"
-        routerLink="/admin/dashboard"
-        routerLinkActive="active"
-      >
-        Dashboard
+    <nav class="nav flex-column gap-1">
+      <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="bi bi-grid-1x2-fill me-2"></i> Dashboard
       </a>
-
-      <a
-        class="nav-link"
-        routerLink="/admin/reservas"
-        routerLinkActive="active"
-      >
-        Reservas
+      <a class="nav-link" routerLink="/admin/reservas" routerLinkActive="active">
+        <i class="bi bi-calendar-check-fill me-2"></i> Reservas
       </a>
-
-      <a
-        class="nav-link"
-        routerLink="/admin/reserva-presencial"
-        routerLinkActive="active"
-
-      
-      >
-        Nueva reserva
+      <a class="nav-link" routerLink="/admin/reserva-presencial" routerLinkActive="active">
+        <i class="bi bi-plus-circle-fill me-2"></i> Nueva reserva
       </a>
-
-      <a
-        class="nav-link"
-        routerLink="/admin/pagos"
-        routerLinkActive="active"
-      >
-        Pagos
+      <a class="nav-link" routerLink="/admin/pagos" routerLinkActive="active">
+        <i class="bi bi-wallet2 me-2"></i> Pagos
       </a>
 
       <a
@@ -67,62 +50,35 @@
       >
         Sedes
       </a>
-
-      <a
-        class="nav-link"
-        routerLink="/admin/canchas"
-        routerLinkActive="active"
-      >
-        Canchas
+      <a class="nav-link" routerLink="/admin/sedes" routerLinkActive="active">
+        <i class="bi bi-building-fill me-2"></i> Sedes
       </a>
-
-      <a
-        class="nav-link"
-        routerLink="/admin/horarios"
-        routerLinkActive="active"
-      >
-        Horarios
+      <a class="nav-link" routerLink="/admin/canchas" routerLinkActive="active">
+        <i class="bi bi-layers-fill me-2"></i> Canchas
       </a>
-
+      <a class="nav-link" routerLink="/admin/horarios" routerLinkActive="active">
+        <i class="bi bi-clock-fill me-2"></i> Horarios
+      </a>
     </nav>
-
+    
   </aside>
 
-
+  <!-- CONTENIDO PRINCIPAL -->
   <div class="main-content">
-
-    <header
-      class="bg-white border-bottom px-4 py-3
-             d-flex justify-content-between align-items-center"
-    >
-
-      <div>
-
-        <span class="text-muted">
-          Usuario:
-        </span>
-
-        <strong>
-          {{ usuario?.nombre }}
-        </strong>
-
+    
+    <header class="top-header">
+      <div class="user-info">
+        <span class="text-muted me-2">Hola,</span>
+        <strong class="text-dark">{{ usuario?.nombre || 'Administrador' }}</strong>
       </div>
 
-
-      <button
-        class="btn btn-outline-danger btn-sm"
-        (click)="cerrarSesion()"
-      >
+      <button class="btn-logout" (click)="cerrarSesion()">
         Cerrar sesión
       </button>
-
     </header>
 
-
-    <main class="p-4">
-
+    <main class="content-area">
       <router-outlet />
-
     </main>
 
   </div>
