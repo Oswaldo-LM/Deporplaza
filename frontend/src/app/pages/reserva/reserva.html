@@ -1,501 +1,316 @@
-<section class="py-5">
+<section class="py-5 reserva-page">
 
   <div class="container">
 
     <div class="mb-4">
-
-      <a
-        routerLink="/disponibilidad"
-        class="text-decoration-none"
-      >
-        ← Volver a disponibilidad
+      <a routerLink="/disponibilidad" class="back-link">
+        <i class="bi bi-arrow-left"></i> Volver a disponibilidad
       </a>
 
-      <h1 class="fw-bold mt-3">
-        Registrar reserva
-      </h1>
+      <h1 class="fw-bold mt-3">Registrar reserva</h1>
+      <p class="text-muted">Completa tus datos para reservar la cancha.</p>
+    </div>
 
-      <p class="text-muted">
-        Completa tus datos para reservar la cancha.
-      </p>
+    <div class="specs-strip mb-4">
+
+      <div class="spec-chip">
+        <div class="spec-chip-icon"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <span class="spec-chip-value">11 Jugadores</span>
+          <span class="spec-chip-label">Capacidad</span>
+        </div>
+      </div>
+
+      <div class="spec-chip">
+        <div class="spec-chip-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+        <div>
+          <span class="spec-chip-value">2 Canchas</span>
+          <span class="spec-chip-label">Disponibles</span>
+        </div>
+      </div>
+
+      <div class="spec-chip">
+        <div class="spec-chip-icon"><i class="bi bi-aspect-ratio"></i></div>
+        <div>
+          <span class="spec-chip-value">42m x 25m</span>
+          <span class="spec-chip-label">Medidas</span>
+        </div>
+      </div>
+
+      <div class="spec-chip">
+        <div class="spec-chip-icon"><i class="bi bi-lightbulb-fill"></i></div>
+        <div>
+          <span class="spec-chip-value">Iluminación LED</span>
+          <span class="spec-chip-label">Grass sintético</span>
+        </div>
+      </div>
 
     </div>
 
-
     @if (cargando) {
-
       <div class="text-center py-5">
-
         <div class="spinner-border text-success"></div>
-
-        <div class="mt-3 text-muted">
-          Cargando información...
-        </div>
-
+        <div class="mt-3 text-muted">Cargando información...</div>
       </div>
-
     } @else if (errorMensaje && !cancha) {
-
-      <div class="alert alert-danger">
-        {{ errorMensaje }}
-      </div>
-
+      <div class="alert alert-danger">{{ errorMensaje }}</div>
     } @else if (cancha) {
-
-
-      <!-- RESERVA CREADA -->
 
       @if (reservaCreada) {
 
-        <div class="card border-success shadow-sm">
+        <div class="card border-0 shadow-sm confirm-card">
+          <div class="card-body p-4 p-md-5">
 
-          <div class="card-body p-4">
+            <div class="confirm-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
 
-            <div class="alert alert-success">
-
-              <h5 class="alert-heading">
-                Reserva registrada
-              </h5>
-
+            <h4 class="fw-bold text-center mb-1">Reserva registrada</h4>
+            <p class="text-muted text-center mb-4">
               Tu horario quedó bloqueado temporalmente.
+            </p>
+
+            <div class="confirm-details">
+
+              <div class="confirm-row">
+                <span>N.º de reserva</span>
+                <strong>{{ reservaCreada.idReserva }}</strong>
+              </div>
+
+              <div class="confirm-row">
+                <span>Cancha</span>
+                <strong>{{ reservaCreada.nombreCancha }}</strong>
+              </div>
+
+              <div class="confirm-row">
+                <span>Fecha</span>
+                <strong>{{ reservaCreada.fechaTurno }}</strong>
+              </div>
+
+              <div class="confirm-row">
+                <span>Horario</span>
+                <strong>
+                  {{ formatearHora(reservaCreada.horaInicio) }} - {{ formatearHora(reservaCreada.horaFin) }}
+                </strong>
+              </div>
+
+              <div class="confirm-row">
+                <span>Total</span>
+                <strong class="text-success">S/ {{ reservaCreada.total }}</strong>
+              </div>
+
+              <div class="confirm-row">
+                <span>Estado</span>
+                <span class="badge text-bg-warning">{{ reservaCreada.estado }}</span>
+              </div>
 
             </div>
 
-
-            <dl class="row mb-0">
-
-              <dt class="col-sm-5">
-                N.º de reserva
-              </dt>
-
-              <dd class="col-sm-7">
-                {{ reservaCreada.idReserva }}
-              </dd>
-
-
-              <dt class="col-sm-5">
-                Cancha
-              </dt>
-
-              <dd class="col-sm-7">
-                {{ reservaCreada.nombreCancha }}
-              </dd>
-
-
-              <dt class="col-sm-5">
-                Fecha
-              </dt>
-
-              <dd class="col-sm-7">
-                {{ reservaCreada.fechaTurno }}
-              </dd>
-
-
-              <dt class="col-sm-5">
-                Horario
-              </dt>
-
-              <dd class="col-sm-7">
-
-                {{
-                  formatearHora(
-                    reservaCreada.horaInicio
-                  )
-                }}
-
-                -
-
-                {{
-                  formatearHora(
-                    reservaCreada.horaFin
-                  )
-                }}
-
-              </dd>
-
-
-              <dt class="col-sm-5">
-                Total
-              </dt>
-
-              <dd class="col-sm-7 fw-bold">
-                S/ {{ reservaCreada.total }}
-              </dd>
-
-
-              <dt class="col-sm-5">
-                Estado
-              </dt>
-
-              <dd class="col-sm-7">
-
-                <span class="badge text-bg-warning">
-                  {{ reservaCreada.estado }}
-                </span>
-
-              </dd>
-
-            </dl>
-
-
-            <hr>
-
-
-            <div class="alert alert-warning mb-0">
-
-              Tienes aproximadamente
-              <strong>5 minutos</strong>
-              para subir tu comprobante de pago.
-
+            <div class="alert alert-warning d-flex align-items-center gap-2 mt-4 mb-0">
+              <i class="bi bi-clock-history fs-5"></i>
+              <div>
+                Tienes aproximadamente <strong>5 minutos</strong> para subir tu comprobante de pago.
+              </div>
             </div>
 
           </div>
-
         </div>
-
 
       } @else {
 
-
         <div class="row g-4">
 
-
-          <!-- INFORMACIÓN DE RESERVA -->
-
+          <!-- RESUMEN CON IMAGEN -->
           <div class="col-lg-4">
+            <div class="card border-0 shadow-sm reservation-card">
 
-            <div
-              class="card border-0 shadow-sm sticky-lg-top"
-              style="top: 1rem;"
-            >
+              <div class="reservation-card-image">
+                <img [src]="obtenerImagenCancha()" alt="{{ cancha.nombre }}">
+                <div class="reservation-card-overlay">
+                  <span class="badge-superficie">{{ cancha.superficie }}</span>
+                  <div class="reservation-card-text">
+                    <span class="eyebrow">{{ cancha.nombreSede }}</span>
+                    <h5>{{ cancha.nombre }}</h5>
+                  </div>
+                </div>
+              </div>
 
               <div class="card-body p-4">
 
-                <h5 class="fw-bold mb-3">
-                  Tu reserva
-                </h5>
-
-
-                <div class="mb-3">
-
-                  <div class="text-muted small">
-                    Sede
+                <div class="mini-info-grid mb-3">
+                  <div class="mini-info-box">
+                    <i class="bi bi-calendar-event"></i>
+                    <div>
+                      <span class="mini-info-label">Fecha</span>
+                      <span class="mini-info-value">{{ fecha }}</span>
+                    </div>
                   </div>
-
-                  <div class="fw-semibold">
-                    {{ cancha.nombreSede }}
+                  <div class="mini-info-box">
+                    <i class="bi bi-clock"></i>
+                    <div>
+                      <span class="mini-info-label">Hora inicio</span>
+                      <span class="mini-info-value">{{ formatearHora(horaInicio) }} hs</span>
+                    </div>
                   </div>
-
                 </div>
 
-
-                <div class="mb-3">
-
-                  <div class="text-muted small">
-                    Cancha
-                  </div>
-
-                  <div class="fw-semibold">
-                    {{ cancha.nombre }}
-                  </div>
-
-                  <small class="text-muted">
-                    {{ cancha.superficie }}
-                  </small>
-
+                <div class="info-row">
+                  <i class="bi bi-hourglass-split"></i>
+                  <span class="info-row-label">Duración:</span>
+                  <span class="info-row-value">
+                    {{ obtenerDuracionTexto(form.controls.cantidadExtras.value) }}
+                  </span>
                 </div>
 
-
-                <div class="mb-3">
-
-                  <div class="text-muted small">
-                    Fecha
-                  </div>
-
-                  <div>
-                    {{ fecha }}
-                  </div>
-
+                <div class="info-row">
+                  <i class="bi bi-tag"></i>
+                  <span class="info-row-label">Tarifa:</span>
+                  <span class="info-row-value">S/ {{ cancha.precioHora }} / hora</span>
                 </div>
-
-
-                <div class="mb-3">
-
-                  <div class="text-muted small">
-                    Hora de inicio
-                  </div>
-
-                  <div>
-                    {{ formatearHora(horaInicio) }}
-                  </div>
-
-                </div>
-
-
-                <div class="mb-3">
-
-                  <div class="text-muted small">
-                    Precio por hora
-                  </div>
-
-                  <div>
-                    S/ {{ cancha.precioHora }}
-                  </div>
-
-                </div>
-
 
                 <hr>
 
-
-                <div
-                  class="d-flex
-                         justify-content-between
-                         align-items-center"
-                >
-
-                  <span class="fw-semibold">
-                    Total
-                  </span>
-
-                  <span
-                    class="fs-4
-                           fw-bold
-                           text-success"
-                  >
-                    S/ {{ calcularTotal() }}
-                  </span>
-
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-semibold">Total</span>
+                  <span class="total-price">S/ {{ calcularTotal() }}</span>
                 </div>
 
               </div>
+            </div>
 
+            <div class="card border-0 shadow-sm includes-card mt-4">
+              <div class="card-body p-4">
+
+                <div class="includes-header">
+                  <div class="includes-title">
+                    <i class="bi bi-gift-fill"></i>
+                    Tu reserva incluye gratis:
+                  </div>
+                  <span class="badge-vip">VIP</span>
+                </div>
+
+                <ul class="includes-list">
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    1 Balón oficial Puma #5 profesional reglamentario
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Juego de chalecos limpios (2 colores: Naranja y Verde)
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Acceso a vestuarios con duchas de agua caliente
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Estacionamiento privado vigilado con cámaras
+                  </li>
+                </ul>
+
+              </div>
             </div>
 
           </div>
 
-
           <!-- FORMULARIO -->
-
           <div class="col-lg-8">
 
             @if (errorMensaje) {
-
-              <div class="alert alert-danger">
-                {{ errorMensaje }}
-              </div>
-
+              <div class="alert alert-danger">{{ errorMensaje }}</div>
             }
 
-
             <div class="card border-0 shadow-sm">
-
               <div class="card-body p-4">
 
-                <form
-                  [formGroup]="form"
-                  (ngSubmit)="crearReserva()"
-                >
-
+                <form [formGroup]="form" (ngSubmit)="crearReserva()">
 
                   <h5 class="fw-bold mb-3">
-                    Duración
+                    <i class="bi bi-hourglass-split text-brand"></i> Duración
                   </h5>
 
-
-                  <div class="mb-4">
-
-                    <label
-                      for="duracion"
-                      class="form-label"
-                    >
-                      Tiempo de reserva
-                    </label>
-
-
-                    <select
-                      id="duracion"
-                      class="form-select"
-                      formControlName="cantidadExtras"
-                    >
-
-                      @for (
-                        extras of obtenerOpcionesExtras();
-                        track extras
-                      ) {
-
-                        <option
-                          [ngValue]="extras"
+                  <div class="duration-options mb-4">
+                    @for (extras of obtenerOpcionesExtras(); track extras) {
+                      <label class="duration-card" [class.selected]="form.controls.cantidadExtras.value === extras">
+                        <input
+                          type="radio"
+                          class="visually-hidden"
+                          name="cantidadExtras"
+                          formControlName="cantidadExtras"
+                          [value]="extras"
                         >
-                          {{
-                            obtenerDuracionTexto(
-                              extras
-                            )
-                          }}
-                        </option>
-
-                      }
-
-                    </select>
-
+                        <span class="duration-time">{{ obtenerDuracionTexto(extras) }}</span>
+                        <span class="duration-price">
+                          S/ {{ cancha.precioHora + extras * (cancha.precioHora / 2) }}
+                        </span>
+                        @if (form.controls.cantidadExtras.value === extras) {
+                          <span class="duration-check"><i class="bi bi-check-circle-fill"></i></span>
+                        }
+                      </label>
+                    }
                   </div>
-
 
                   <hr>
 
-
                   <h5 class="fw-bold my-4">
-                    Datos del cliente
+                    <i class="bi bi-person-lines-fill text-brand"></i> Datos del cliente
                   </h5>
 
-
                   <div class="mb-3">
-
-                    <label class="form-label">
-                      Nombre completo
-                    </label>
-
-                    <input
-                      type="text"
-                      class="form-control"
-                      formControlName="nombreCompleto"
-                    >
-
-                    @if (
-                      form.controls.nombreCompleto.touched
-                      &&
-                      form.controls.nombreCompleto.invalid
-                    ) {
-
-                      <div class="text-danger small mt-1">
-                        El nombre es obligatorio.
-                      </div>
-
+                    <label class="form-label">Nombre completo</label>
+                    <input type="text" class="form-control" formControlName="nombreCompleto">
+                    @if (form.controls.nombreCompleto.touched && form.controls.nombreCompleto.invalid) {
+                      <div class="text-danger small mt-1">El nombre es obligatorio.</div>
                     }
-
                   </div>
-
 
                   <div class="row g-3 mb-3">
-
                     <div class="col-md-4">
-
-                      <label class="form-label">
-                        Tipo de documento
-                      </label>
-
-                      <select
-                        class="form-select"
-                        formControlName="tipoDocumento"
-                      >
-
-                        @for (
-                          tipo of tiposDocumento;
-                          track tipo
-                        ) {
-
-                          <option [value]="tipo">
-                            {{ tipo }}
-                          </option>
-
+                      <label class="form-label">Tipo de documento</label>
+                      <select class="form-select" formControlName="tipoDocumento">
+                        @for (tipo of tiposDocumento; track tipo) {
+                          <option [value]="tipo">{{ tipo }}</option>
                         }
-
                       </select>
-
                     </div>
-
 
                     <div class="col-md-8">
-
-                      <label class="form-label">
-                        Número de documento
-                      </label>
-
-                      <input
-                        type="text"
-                        class="form-control"
-                        formControlName="numDocumento"
-                      >
-
+                      <label class="form-label">Número de documento</label>
+                      <input type="text" class="form-control" formControlName="numDocumento">
                     </div>
-
                   </div>
-
 
                   <div class="row g-3 mb-4">
-
                     <div class="col-md-6">
-
-                      <label class="form-label">
-                        Correo electrónico
-                      </label>
-
-                      <input
-                        type="email"
-                        class="form-control"
-                        formControlName="email"
-                      >
-
-                      @if (
-                        form.controls.email.touched
-                        &&
-                        form.controls.email.invalid
-                      ) {
-
-                        <div class="text-danger small mt-1">
-                          Ingresa un correo válido.
-                        </div>
-
+                      <label class="form-label">Correo electrónico</label>
+                      <input type="email" class="form-control" formControlName="email">
+                      @if (form.controls.email.touched && form.controls.email.invalid) {
+                        <div class="text-danger small mt-1">Ingresa un correo válido.</div>
                       }
-
                     </div>
-
 
                     <div class="col-md-6">
-
-                      <label class="form-label">
-                        Teléfono
-                      </label>
-
-                      <input
-                        type="tel"
-                        class="form-control"
-                        formControlName="telefono"
-                      >
-
+                      <label class="form-label">Teléfono</label>
+                      <input type="tel" class="form-control" formControlName="telefono">
                     </div>
-
                   </div>
 
+                  <div class="notice-box mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    Al confirmar, tu horario quedará bloqueado temporalmente mientras registras tu comprobante de pago.
+                  </div>
 
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg w-100"
-                    [disabled]="guardando"
-                  >
-
+                  <button type="submit" class="btn btn-cta w-100" [disabled]="guardando">
                     @if (guardando) {
-
-                      <span
-                        class="spinner-border
-                               spinner-border-sm
-                               me-2"
-                      ></span>
-
-                      Registrando...
-
+                      <span class="spinner-border spinner-border-sm me-2"></span> Registrando...
                     } @else {
-
-                      Confirmar reserva
-
+                      <i class="bi bi-lock-fill"></i> Confirmar reserva · S/ {{ calcularTotal() }}
                     }
-
                   </button>
 
                 </form>
 
               </div>
-
             </div>
 
           </div>

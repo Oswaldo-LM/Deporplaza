@@ -1,0 +1,360 @@
+@import "variables";
+
+.reserva-page {
+  .back-link {
+    color: $primary;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// FRANJA DE SPECS (neutro, es solo información)
+.specs-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.spec-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background-color: #fff;
+  border-radius: 0.6rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.1rem;
+}
+
+.spec-chip-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: $light-bg;
+  color: $body-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+.spec-chip-value {
+  display: block;
+  font-weight: 700;
+}
+
+.spec-chip-label {
+  display: block;
+  font-size: 0.8rem;
+  color: $body-color;
+}
+
+// TARJETA DE RESERVA CON IMAGEN
+.reservation-card {
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+}
+
+.reservation-card-image {
+  position: relative;
+  height: 180px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.reservation-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+// Badge de superficie → verde (info positiva de la cancha)
+.badge-superficie {
+  align-self: flex-start;
+  background-color: rgba($success, 0.9);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+}
+
+.reservation-card-text {
+  .eyebrow {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  h5 {
+    color: #fff;
+    font-weight: 800;
+    margin: 0.1rem 0 0;
+  }
+}
+
+// MINI INFO (fecha / hora) → neutro
+.mini-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.mini-info-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: $light-bg;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.75rem;
+
+  i {
+    color: $body-color;
+    font-size: 1.1rem;
+  }
+}
+
+.mini-info-label {
+  display: block;
+  font-size: 0.7rem;
+  color: $body-color;
+  text-transform: uppercase;
+}
+
+.mini-info-value {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+// FILAS DE INFO (Duración / Tarifa) → neutro
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+
+  i {
+    color: $body-color;
+  }
+
+  .info-row-label {
+    color: $body-color;
+  }
+
+  .info-row-value {
+    margin-left: auto;
+    font-weight: 700;
+  }
+}
+
+// Precio total → naranja (dato destacado)
+.total-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $primary;
+}
+
+// TARJETAS DE DURACIÓN → naranja solo cuando está seleccionada
+.duration-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.duration-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.6rem;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: rgba($primary, 0.4);
+  }
+
+  &.selected {
+    border-color: $primary;
+    background-color: rgba($primary, 0.06);
+  }
+}
+
+.duration-time {
+  font-weight: 700;
+}
+
+.duration-price {
+  font-size: 0.85rem;
+  color: $body-color;
+}
+
+.duration-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: $primary;
+  font-size: 1rem;
+}
+
+.text-brand {
+  color: $primary;
+}
+
+.notice-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  background-color: rgba($primary, 0.08);
+  border-radius: 0.6rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: $body-color;
+
+  i {
+    color: $primary;
+    margin-top: 2px;
+  }
+}
+
+// BOTÓN CTA → naranja (acción principal)
+.btn-cta {
+  background-color: $primary;
+  border-color: $primary;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 1.05rem;
+
+  &:hover {
+    background-color: $primary-dark;
+    border-color: $primary-dark;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
+
+  i {
+    margin-right: 0.4rem;
+  }
+}
+
+// CONFIRMACIÓN → verde (éxito)
+.confirm-card {
+  border-radius: $border-radius-lg;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.confirm-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba($success, 0.1);
+  color: $success;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 1rem;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    color: $body-color;
+  }
+}
+// TARJETA "INCLUYE GRATIS"
+.includes-card {
+  border-radius: $border-radius-lg;
+  background-color: rgba($success, 0.06);
+}
+
+.includes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.includes-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: $success;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.badge-vip {
+  background-color: rgba($success, 0.15);
+  color: $success;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.includes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: $body-color;
+
+    i {
+      color: $success;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+  }
+}

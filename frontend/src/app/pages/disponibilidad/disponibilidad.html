@@ -2,357 +2,240 @@
 
   <div class="container">
 
-    <!-- CABECERA -->
+    <!-- CABECERA TIPO PANEL EN VIVO -->
+    <div class="live-panel mb-4">
 
-    <div class="mb-4">
-
-      <h1 class="fw-bold">
-        Disponibilidad de canchas
-      </h1>
-
-      <p class="text-muted mb-0">
-        Selecciona una sede y una fecha para consultar
-        los horarios disponibles.
-      </p>
-
-    </div>
-
-
-    <!-- FORMULARIO -->
-
-    <div class="card border-0 shadow-sm mb-4">
-
-      <div class="card-body p-4">
-
-        <form
-          [formGroup]="form"
-          (ngSubmit)="consultar()"
-        >
-
-          <div class="row g-3 align-items-end">
-
-            <!-- SEDE -->
-
-            <div class="col-md-5">
-
-              <label
-                for="sede"
-                class="form-label"
-              >
-                Sede
-              </label>
-
-
-              <select
-                id="sede"
-                class="form-select"
-                formControlName="sedeId"
-              >
-
-                <option [ngValue]="0">
-                  Selecciona una sede
-                </option>
-
-
-                @for (
-                  sede of sedes;
-                  track sede.idSede
-                ) {
-
-                  <option
-                    [ngValue]="sede.idSede"
-                  >
-                    {{ sede.nombre }}
-                  </option>
-
-                }
-
-              </select>
-
-
-              @if (
-                form.controls.sedeId.touched
-                && form.controls.sedeId.invalid
-              ) {
-
-                <div class="text-danger small mt-1">
-                  Selecciona una sede.
-                </div>
-
+      <div class="live-panel-top">
+        <div class="live-panel-info">
+          <span class="live-dot"></span>
+          <div>
+            <div class="live-title">Horarios en Vivo</div>
+            <div class="live-subtitle">
+              Disponibilidad &amp; Reserva de Turnos
+              @if (ultimaActualizacion) {
+                <span class="live-updated">· Actualizado a las {{ ultimaActualizacion | date:'HH:mm' }}</span>
               }
-
             </div>
-
-
-            <!-- FECHA -->
-
-            <div class="col-md-4">
-
-              <label
-                for="fecha"
-                class="form-label"
-              >
-                Fecha
-              </label>
-
-
-              <input
-                id="fecha"
-                type="date"
-                class="form-control"
-                formControlName="fecha"
-                [min]="fechaMin"
-                [max]="fechaMax"
-              >
-
-            </div>
-
-
-            <!-- BOTÓN -->
-
-            <div class="col-md-3">
-
-              <button
-                type="submit"
-                class="btn btn-success w-100"
-                [disabled]="
-                  consultando
-                  || cargandoSedes
-                "
-              >
-
-                @if (consultando) {
-
-                  <span
-                    class="spinner-border
-                           spinner-border-sm
-                           me-2"
-                  ></span>
-
-                  Consultando...
-
-                } @else {
-
-                  Consultar
-
-                }
-
-              </button>
-
-            </div>
-
           </div>
+        </div>
 
-        </form>
+        <!-- DROPDOWN DE SEDE PERSONALIZADO -->
+        <div class="sede-dropdown">
+          <button
+            type="button"
+            class="sede-dropdown-btn"
+            (click)="toggleSedeDropdown()"
+          >
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>{{ obtenerNombreSedeSeleccionada() }}</span>
+            <i class="bi bi-chevron-down sede-dropdown-arrow" [class.rotated]="sedeDropdownAbierto"></i>
+          </button>
 
+          @if (sedeDropdownAbierto) {
+            <div class="sede-dropdown-menu">
+              @for (sede of sedes; track sede.idSede) {
+                <button
+                  type="button"
+                  class="sede-dropdown-item"
+                  [class.active]="form.controls.sedeId.value === sede.idSede"
+                  (click)="seleccionarSede(sede.idSede)"
+                >
+                  {{ sede.nombre }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (form.controls.sedeId.touched && form.controls.sedeId.invalid) {
+        <div class="text-danger small mt-2">Selecciona una sede.</div>
+      }
+
+      <!-- TABS DE FECHA + SELECTOR DE CALENDARIO -->
+      <div class="date-tabs-wrapper">
+        <div class="date-tabs">
+          @for (d of diasSemana; track d.iso) {
+            <button
+              type="button"
+              class="date-tab"
+              [class.active]="form.controls.fecha.value === d.iso"
+              (click)="seleccionarFecha(d.iso)"
+            >
+              <span class="date-tab-day">{{ d.esHoy ? 'HOY' : d.diaSemana }}</span>
+              <span class="date-tab-num">{{ d.dia }}</span>
+              <span class="date-tab-month">{{ d.mes }}</span>
+            </button>
+          }
+        </div>
+
+        <label class="calendar-picker-btn">
+          <i class="bi bi-calendar3"></i>
+          <input
+            type="date"
+            class="calendar-picker-input"
+            [value]="form.controls.fecha.value"
+            [min]="fechaMinSemana"
+            [max]="fechaMaxSemana"
+            (change)="onFechaManualCambiada($event)"
+          >
+        </label>
+
+        <button
+          type="button"
+          class="refresh-btn"
+          [disabled]="consultando || cargandoSedes"
+          (click)="consultar()"
+        >
+          @if (consultando) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="bi bi-arrow-clockwise"></i>
+          }
+        </button>
+      </div>
+
+      <!-- LEYENDA -->
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot legend-disponible"></span> Disponible</span>
+        <span class="legend-item"><span class="legend-dot legend-seleccionado"></span> Seleccionado</span>
+        <span class="legend-item"><span class="legend-dot legend-ocupado"></span> Ocupado</span>
       </div>
 
     </div>
 
 
     <!-- ERROR -->
-
     @if (errorMensaje) {
-
-      <div
-        class="alert alert-danger"
-        role="alert"
-      >
+      <div class="alert alert-danger" role="alert">
         {{ errorMensaje }}
       </div>
-
     }
 
 
     <!-- RESULTADOS -->
-
     @if (resultado) {
 
-      <div class="mb-3">
-
-        <h4 class="fw-bold mb-1">
-          {{ resultado.nombreSede }}
-        </h4>
-
-        <div class="text-muted">
-          {{ resultado.fecha }}
-          ·
-          {{ resultado.diaSemana }}
+            <div class="results-header mb-4">
+        <div class="results-header-badge">
+          <i class="bi bi-building"></i>
         </div>
-
+        <div>
+          <h4 class="results-header-title">{{ resultado.nombreSede }}</h4>
+          <div class="results-header-date">
+            <span class="results-day-badge">{{ resultado.diaSemana }}</span>
+            <span class="results-date-value">{{ resultado.fecha }}</span>
+          </div>
+        </div>
       </div>
-
 
       @if (resultado.canchas.length === 0) {
 
         <div class="alert alert-info">
-
-          Esta sede no tiene canchas activas
-          disponibles.
-
+          Esta sede no tiene canchas activas disponibles.
         </div>
 
       } @else {
 
-        <div class="card border-0 shadow-sm">
-
+        <div class="card border-0 shadow-sm schedule-card">
           <div class="card-body p-0">
-
             <div class="table-responsive">
+              <table class="table align-middle text-center mb-0 schedule-table">
 
-              <table
-                class="table
-                       table-bordered
-                       align-middle
-                       text-center
-                       mb-0"
-              >
-
-                <!-- ENCABEZADO -->
-
-                <thead class="table-light">
-
+                <thead>
                   <tr>
-
-                    <th
-                      class="hora-columna"
-                    >
-                      Hora
+                    <th class="hora-columna">
+                      <i class="bi bi-clock"></i> Hora
                     </th>
-
-
-                    @for (
-                      cancha of resultado.canchas;
-                      track cancha.idCancha
-                    ) {
-
+                    @for (cancha of resultado.canchas; track cancha.idCancha) {
                       <th>
-
-                        <div class="fw-bold">
-                          {{ cancha.nombre }}
-                        </div>
-
-                        <div
-                          class="small text-muted"
-                        >
-                          {{ cancha.superficie }}
-                        </div>
-
-                        <div
-                          class="small text-success"
-                        >
-                          S/
-                          {{ cancha.precioHora }}
-                          / hora
-                        </div>
-
+                        <div class="fw-bold">{{ cancha.nombre }}</div>
+                        <div class="small text-muted">{{ cancha.superficie }}</div>
+                        <div class="small precio-tag">S/ {{ cancha.precioHora }} / hora</div>
                       </th>
-
                     }
-
                   </tr>
-
                 </thead>
 
-
-                <!-- HORARIOS -->
-
                 <tbody>
-
-                  @for (
-                    hora of horas;
-                    track hora
-                  ) {
-
+                  @for (hora of horas; track hora) {
                     <tr>
+                      <th class="hora-columna">{{ formatearHora(hora) }}</th>
 
-                      <th
-                        class="table-light"
-                      >
-                        {{ formatearHora(hora) }}
-                      </th>
-
-
-                      @for (
-                        cancha of resultado.canchas;
-                        track cancha.idCancha
-                      ) {
-
+                      @for (cancha of resultado.canchas; track cancha.idCancha) {
                         <td>
-
-                          @if (
-                            obtenerBloque(
-                              cancha,
-                              hora
-                            );
-                            as bloque
-                          ) {
+                          @if (obtenerBloque(cancha, hora); as bloque) {
 
                             @if (bloque.disponible) {
-
-                                <button type="button"
-                                  class="btn btn-outline-success
-                                         btn-sm
-                                         w-100"
-                                  (click)="seleccionarHorario(
-                                    cancha,
-                                    bloque
-                                  )">
-
-                                  <div class="fw-bold">
-                                    Diponible
-                                  </div>
-
-                                  <div class="small text-success">
-                                    Hasta
-                                    {{ formatearDuracion(bloque.duracionMaximaMinutos) }}
-                                  </div>
-
-                                </button>
-
-
-                            } @else {
-
-                                
-                              <span
-                                class="badge
-                                       text-bg-secondary"
+                              <button
+                                type="button"
+                                class="slot-btn slot-disponible"
+                                [class.slot-seleccionado]="esSeleccionado(cancha, bloque)"
+                                (click)="seleccionarHorario(cancha, bloque)"
                               >
-                                Ocupado
-                              </span>
-
+                                <span class="slot-label">
+                                  {{ esSeleccionado(cancha, bloque) ? 'Seleccionado' : 'Disponible' }}
+                                </span>
+                                <span class="slot-detail">Hasta {{ formatearDuracion(bloque.duracionMaximaMinutos) }}</span>
+                              </button>
+                            } @else {
+                              <div class="slot-btn slot-ocupado">
+                                <span class="slot-label">Ocupado</span>
+                              </div>
                             }
 
                           } @else {
-
-                            <span
-                              class="text-muted"
-                            >
-                              —
-                            </span>
-
+                            <span class="text-muted">—</span>
                           }
-
                         </td>
-
                       }
 
                     </tr>
-
                   }
-
                 </tbody>
 
               </table>
-
             </div>
 
+            <div class="schedule-footer">
+              <i class="bi bi-info-circle"></i>
+              Las tarifas por hora incluyen iluminación LED deportiva. Duración por turno con tolerancia previa y posterior.
+            </div>
           </div>
-
         </div>
 
-      }
+        <!-- BARRA DE SELECCIÓN (EN FLUJO NORMAL, NO FLOTANTE) -->
+        @if (seleccion) {
+          <div class="selection-bar">
 
+            <div class="selection-info">
+              <span class="selection-icon"><i class="bi bi-calendar-check-fill"></i></span>
+              <div>
+                <div class="selection-label">Turno seleccionado</div>
+                <div class="selection-detail">
+                  {{ seleccion.cancha.nombre }} — {{ resultado.diaSemana }} a las {{ formatearHora(seleccion.bloque.horaInicio) }} hs
+                </div>
+              </div>
+            </div>
+
+            <div class="selection-total">
+              <span class="selection-total-label">Total a pagar</span>
+              <span class="selection-total-value">S/ {{ obtenerTotalSeleccion() }}</span>
+            </div>
+
+            <button type="button" class="selection-change-btn" (click)="cambiarSeleccion()">
+              Cambiar
+            </button>
+
+            <button type="button" class="selection-continue-btn" (click)="continuarConReserva()">
+              Continuar con la reserva
+              <i class="bi bi-arrow-right"></i>
+            </button>
+
+          </div>
+        }
+
+      }
     }
 
   </div>

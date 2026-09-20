@@ -42,53 +42,53 @@ import {
 })
 export class AdminLogin {
 
-  private readonly fb =
-    inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
 
-  private readonly authService =
-    inject(AuthService);
+  private readonly authService = inject(AuthService);
 
-  private readonly sessionService =
-    inject(SessionService);
+  private readonly sessionService = inject(SessionService);
 
-  private readonly router =
-    inject(Router);
+  private readonly router = inject(Router);
 
-  private readonly cdr =
-    inject(ChangeDetectorRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
 
   cargando = false;
 
   errorMensaje = '';
 
+  mostrarPassword = false;
 
-  form =
-    this.fb.nonNullable.group({
 
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email
-        ]
-      ],
+  form = this.fb.nonNullable.group({
 
-      password: [
-        '',
-        [
-          Validators.required
-        ]
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email
       ]
+    ],
 
-    });
+    password: [
+      '',
+      [
+        Validators.required
+      ]
+    ]
+
+  });
+
+
+  alternarPassword(): void {
+
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
 
   iniciarSesion(): void {
 
-    if (
-      this.form.invalid
-    ) {
+    if (this.form.invalid) {
 
       this.form.markAllAsTouched();
 
@@ -96,15 +96,12 @@ export class AdminLogin {
     }
 
 
-    this.cargando =
-      true;
+    this.cargando = true;
 
-    this.errorMensaje =
-      '';
+    this.errorMensaje = '';
 
 
-    const request =
-      this.form.getRawValue();
+    const request = this.form.getRawValue();
 
 
     this.authService
@@ -121,21 +118,14 @@ export class AdminLogin {
            * que quien entra por este portal
            * sea ADMIN.
            */
-          if (
-            respuesta.rol !== 'ADMIN'
-          ) {
+          if (respuesta.rol !== 'ADMIN') {
 
-            this.sessionService
-              .limpiarSesion();
+            this.sessionService.limpiarSesion();
 
-
-            this.cargando =
-              false;
-
+            this.cargando = false;
 
             this.errorMensaje =
               'Esta cuenta no tiene permisos de administrador.';
-
 
             this.cdr.markForCheck();
 
@@ -143,9 +133,7 @@ export class AdminLogin {
           }
 
 
-          this.cargando =
-            false;
-
+          this.cargando = false;
 
           this.router.navigate([
             '/admin/dashboard'
@@ -154,17 +142,12 @@ export class AdminLogin {
         },
 
 
-        error: (
-          error: HttpErrorResponse
-        ) => {
+        error: (error: HttpErrorResponse) => {
 
-          this.cargando =
-            false;
+          this.cargando = false;
 
 
-          if (
-            error.status === 401
-          ) {
+          if (error.status === 401) {
 
             this.errorMensaje =
               'Correo o contraseña incorrectos.';
