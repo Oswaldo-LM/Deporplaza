@@ -1,152 +1,94 @@
-<div class="admin-login-page">
+<div class="login-wrapper">
+  
+  <!-- Capa muy suave para que la cancha se vea clara pero enfocando la tarjeta -->
+  <div class="background-overlay"></div>
 
-  <div class="login-container">
-
+  <!-- Tarjeta Negra Transparente (Glassmorphism) -->
+  <div class="form-card animate-slide-up">
+    
     <div class="text-center mb-4">
-
-      <div class="brand">
-        DEPORPLAZA
-      </div>
-
-      <h1 class="h4 fw-bold mt-3 mb-1">
+      <img src="/img/logo.png" alt="DeporPlaza Logo" class="brand-logo mb-3">
+      
+      <h1 class="title-colored mt-2 mb-3">
         Administración
       </h1>
-
-      <p class="text-muted mb-0">
+      
+      <!-- Subtítulo resaltado tipo etiqueta con ícono -->
+      <div class="subtitle-badge mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-lock" viewBox="0 0 16 16">
+          <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+        </svg>
         Acceso exclusivo para personal autorizado
-      </p>
-
+      </div>
     </div>
 
+    @if (errorMensaje) {
+      <div class="alert alert-danger animate-fade-in" role="alert">
+        {{ errorMensaje }}
+      </div>
+    }
 
-    <div class="card border-0 shadow-lg">
+    <form [formGroup]="form" (ngSubmit)="iniciarSesion()">
 
-      <div class="card-body p-4 p-md-5">
-
-        @if (errorMensaje) {
-
-          <div
-            class="alert alert-danger"
-            role="alert"
-          >
-            {{ errorMensaje }}
-          </div>
-
-        }
-
-
-        <form
-          [formGroup]="form"
-          (ngSubmit)="iniciarSesion()"
+      <div class="mb-3 input-group-custom">
+        <label for="email" class="form-label">
+          Correo electrónico
+        </label>
+        <input
+          id="email"
+          type="email"
+          class="form-control custom-input"
+          formControlName="email"
+          autocomplete="username"
+          placeholder="admin@deporplaza.local"
         >
-
-          <div class="mb-3">
-
-            <label
-              for="email"
-              class="form-label"
-            >
-              Correo electrónico
-            </label>
-
-            <input
-              id="email"
-              type="email"
-              class="form-control"
-              formControlName="email"
-              autocomplete="username"
-              placeholder="admin@deporplaza.local"
-            >
-
-
-            @if (
-              form.controls.email.touched
-              &&
-              form.controls.email.invalid
-            ) {
-
-              <div class="text-danger small mt-1">
-                Ingresa un correo válido.
-              </div>
-
-            }
-
+        
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <div class="text-danger small mt-1 animate-fade-in">
+            Ingresa un correo válido.
           </div>
-
-
-          <div class="mb-4">
-
-            <label
-              for="password"
-              class="form-label"
-            >
-              Contraseña
-            </label>
-
-            <input
-              id="password"
-              type="password"
-              class="form-control"
-              formControlName="password"
-              autocomplete="current-password"
-            >
-
-
-            @if (
-              form.controls.password.touched
-              &&
-              form.controls.password.invalid
-            ) {
-
-              <div class="text-danger small mt-1">
-                La contraseña es obligatoria.
-              </div>
-
-            }
-
-          </div>
-
-
-          <button
-            type="submit"
-            class="btn btn-dark btn-lg w-100"
-            [disabled]="cargando"
-          >
-
-            @if (cargando) {
-
-              <span
-                class="spinner-border
-                       spinner-border-sm
-                       me-2"
-              ></span>
-
-              Iniciando sesión...
-
-            } @else {
-
-              Iniciar sesión
-
-            }
-
-          </button>
-
-        </form>
-
+        }
       </div>
 
-    </div>
+      <div class="mb-4 input-group-custom">
+        <label for="password" class="form-label">
+          Contraseña
+        </label>
+        <input
+          id="password"
+          type="password"
+          class="form-control custom-input"
+          formControlName="password"
+          autocomplete="current-password"
+          placeholder="••••••••"
+        >
 
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <div class="text-danger small mt-1 animate-fade-in">
+            La contraseña es obligatoria.
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn-submit w-100"
+        [disabled]="cargando"
+      >
+        @if (cargando) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Iniciando sesión...
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+
+    </form>
 
     <div class="text-center mt-4">
-
-      <a
-        routerLink="/"
-        class="text-decoration-none"
-      >
+      <a routerLink="/" class="back-link">
         ← Volver al sitio web
       </a>
-
     </div>
 
   </div>
