@@ -42,6 +42,18 @@ import {
   ReservaService
 } from '../../core/services/reserva';
 
+import {
+  AuthService
+} from '../../core/services/auth';
+
+import {
+  ClientePerfilService
+} from '../../core/services/cliente-perfil';
+
+import {
+  ReservaPendienteService
+} from '../../core/services/reserva-pendiente.service';
+
 
 @Component({
   selector: 'app-reserva',
@@ -73,8 +85,17 @@ export class Reserva
   private readonly reservaService =
     inject(ReservaService);
 
+  private readonly authService =
+    inject(AuthService);
+
+  private readonly clientePerfilService =
+    inject(ClientePerfilService);
+
   private readonly cdRef =
     inject(ChangeDetectorRef);
+
+  private readonly reservaPendienteService =
+  inject(ReservaPendienteService);  
 
 
   cancha:
@@ -93,6 +114,29 @@ export class Reserva
   guardando = false;
 
   errorMensaje = '';
+
+
+  /*
+   * Indica si la persona que está haciendo
+   * la reserva inició sesión como CLIENTE.
+   */
+  clienteAutenticado = false;
+
+
+  /*
+   * Mientras obtenemos:
+   *
+   * GET /api/cliente/perfil
+   */
+  cargandoPerfilCliente = false;
+
+
+  /*
+   * Si existe sesión CLIENTE, no permitimos
+   * enviar la reserva hasta tener cargados
+   * correctamente sus datos.
+   */
+  perfilClienteCargado = false;
 
 
   reservaCreada:
@@ -164,9 +208,157 @@ export class Reserva
 
   ngOnInit(): void {
 
+    /*
+     * Primero verificamos si existe
+     * una sesión CLIENTE válida.
+     */
+    this.clienteAutenticado =
+      this.authService
+        .esCliente();
+
+
+    /*
+     * Cargamos cancha, fecha y horario.
+     */
     this.cargarSeleccion();
+
+
+    /*
+     * Si inició sesión como CLIENTE,
+     * cargamos automáticamente sus datos.
+     *
+     * Si es invitado, simplemente dejamos
+     * el formulario disponible.
+     */
+    if (
+      this.clienteAutenticado
+    ) {
+
+      this.cargarPerfilCliente();
+
+    } else {
+
+      this.perfilClienteCargado =
+        true;
+    }
   }
 
+
+  // =========================================================
+  // CARGAR PERFIL DEL CLIENTE AUTENTICADO
+  // =========================================================
+
+  private cargarPerfilCliente(): void {
+
+    this.cargandoPerfilCliente =
+      true;
+
+
+    this.clientePerfilService
+      .obtenerPerfil()
+      .subscribe({
+
+        next: perfil => {
+
+          /*
+           * Cargamos los datos almacenados
+           * en TB_CLIENTE.
+           */
+          this.form.patchValue({
+
+            nombreCompleto:
+              perfil.nombreCompleto,
+
+            tipoDocumento:
+              perfil.tipoDocumento,
+
+            numDocumento:
+              perfil.numDocumento,
+
+            email:
+              perfil.email,
+
+            telefono:
+              perfil.telefono
+
+          });
+
+
+          /*
+           * Un usuario CLIENTE autenticado
+           * no necesita escribir nuevamente
+           * sus datos personales.
+           *
+           * Además evitamos inconsistencias
+           * visuales con su cuenta.
+           */
+          this.form.controls
+            .nombreCompleto
+            .disable();
+
+          this.form.controls
+            .tipoDocumento
+            .disable();
+
+          this.form.controls
+            .numDocumento
+            .disable();
+
+          this.form.controls
+            .email
+            .disable();
+
+          this.form.controls
+            .telefono
+            .disable();
+
+
+          this.cargandoPerfilCliente =
+            false;
+
+          this.perfilClienteCargado =
+            true;
+
+
+          this.cdRef.markForCheck();
+        },
+
+
+        error: (
+          error: HttpErrorResponse
+        ) => {
+
+          this.cargandoPerfilCliente =
+            false;
+
+          this.perfilClienteCargado =
+            false;
+
+
+          if (
+            error.error?.message
+          ) {
+
+            this.errorMensaje =
+              error.error.message;
+
+          } else {
+
+            this.errorMensaje =
+              'No se pudieron cargar los datos de tu cuenta.';
+          }
+
+
+          this.cdRef.markForCheck();
+        }
+
+      });
+  }
+
+
+  // =========================================================
+  // CARGAR CANCHA / FECHA / HORA
+  // =========================================================
 
   private cargarSeleccion(): void {
 
@@ -244,7 +436,6 @@ export class Reserva
             false;
 
           this.cdRef.markForCheck();
-
         },
 
 
@@ -257,12 +448,15 @@ export class Reserva
             'No se pudo cargar la cancha seleccionada.';
 
           this.cdRef.markForCheck();
-
         }
 
       });
   }
 
+
+  // =========================================================
+  // EXTRAS / DURACIÓN
+  // =========================================================
 
   obtenerOpcionesExtras():
     number[] {
@@ -320,6 +514,10 @@ export class Reserva
   }
 
 
+  // =========================================================
+  // TOTAL
+  // =========================================================
+
   calcularTotal(): number {
 
     if (!this.cancha) {
@@ -340,7 +538,29 @@ export class Reserva
   }
 
 
+  // =========================================================
+  // CREAR RESERVA
+  // =========================================================
+
   crearReserva(): void {
+
+    /*
+     * Si existe sesión CLIENTE pero no
+     * conseguimos cargar su perfil,
+     * no intentamos crear la reserva.
+     */
+    if (
+      this.clienteAutenticado
+      &&
+      !this.perfilClienteCargado
+    ) {
+
+      this.errorMensaje =
+        'No se pudieron cargar correctamente los datos de tu cuenta.';
+
+      return;
+    }
+
 
     if (
       this.form.invalid
@@ -353,11 +573,23 @@ export class Reserva
     }
 
 
-    this.guardando = true;
+    this.guardando =
+      true;
 
-    this.errorMensaje = '';
+    this.errorMensaje =
+      '';
 
 
+    /*
+     * IMPORTANTE:
+     *
+     * getRawValue() incluye también
+     * los controles deshabilitados.
+     *
+     * Por eso los datos del cliente
+     * autenticado seguirán formando
+     * parte del request.
+     */
     const datos =
       this.form.getRawValue();
 
@@ -406,8 +638,18 @@ export class Reserva
           this.reservaCreada =
             reserva;
 
-          this.cdRef.markForCheck();
+          /*
+   * Guardamos temporalmente la reserva.
+   *
+   * Es especialmente importante para
+   * usuarios invitados.
+   */
+  this.reservaPendienteService
+    .guardar(
+      reserva
+    );
 
+          this.cdRef.markForCheck();
         },
 
 
@@ -427,19 +669,22 @@ export class Reserva
               error.error.message;
 
           } else {
+
             this.errorMensaje =
               'No se pudo registrar la reserva.';
-
-            this.cdRef.markForCheck();
           }
 
 
-
+          this.cdRef.markForCheck();
         }
 
       });
   }
 
+
+  // =========================================================
+  // FORMATO HORA
+  // =========================================================
 
   formatearHora(
     hora: string
@@ -450,20 +695,37 @@ export class Reserva
       5
     );
   }
-obtenerImagenCancha(): string {
 
-  if (!this.cancha) {
+
+  // =========================================================
+  // IMAGEN CANCHA
+  // =========================================================
+
+  obtenerImagenCancha(): string {
+
+    if (!this.cancha) {
+
+      return 'img/cancha-1.jpg';
+    }
+
+
+    const superficie =
+      this.cancha.superficie
+        ?.toUpperCase()
+      ?? '';
+
+
+    if (
+      superficie.includes(
+        'LOSA'
+      )
+    ) {
+
+      return 'img/cancha-2.jpg';
+    }
+
+
     return 'img/cancha-1.jpg';
   }
-
-  const superficie =
-    this.cancha.superficie?.toUpperCase() ?? '';
-
-  if (superficie.includes('LOSA')) {
-    return 'img/cancha-2.jpg';
-  }
-
-  return 'img/cancha-1.jpg';
-}
 
 }

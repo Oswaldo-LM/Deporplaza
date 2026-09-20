@@ -94,6 +94,9 @@ import {
   Horarios
 } from './pages/admin/horarios/horarios';
 
+import {
+  Reportes
+} from './pages/admin/reportes/reportes';
 
 /*
  * GUARDS
@@ -167,6 +170,11 @@ export const routes: Routes = [
       {
         path: 'pagos',
         component: Pagos
+      },
+
+      {
+        path: 'reportes',
+        component: Reportes
       },
 
 

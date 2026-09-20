@@ -14,10 +14,13 @@ import java.util.Optional;
 
 public interface PagoRepository
         extends JpaRepository<Pago, Integer> {
+                
+
 
     Optional<Pago> findByReservaIdReserva(
             Integer idReserva
     );
+    
 
     boolean existsByReservaIdReserva(
             Integer idReserva
@@ -26,6 +29,8 @@ public interface PagoRepository
     List<Pago> findByEstado(
             EstadoPago estado
     );
+
+    
 
 
     @Query("""

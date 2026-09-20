@@ -10,6 +10,9 @@ import {
   PagoResponse
 } from '../models/pago.model';
 
+import {
+  ReservaResponse
+} from '../models/reserva.model';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +57,15 @@ export class PagoService {
       formData
     );
   }
+
+  obtenerReservaCliente(
+  idReserva: number
+): Observable<ReservaResponse> {
+
+  return this.http.get<ReservaResponse>(
+    `${environment.apiUrl}/cliente/mis-reservas/${idReserva}`
+  );
+}
 
 
   listarPendientes():

@@ -58,6 +58,10 @@ export class ClienteMisReservas
   }
 
 
+  // =========================================================
+  // CARGAR RESERVAS
+  // =========================================================
+
   cargarReservas(): void {
 
     this.cargando =
@@ -79,8 +83,7 @@ export class ClienteMisReservas
           this.cargando =
             false;
 
-          this.cdr
-            .markForCheck();
+          this.cdr.markForCheck();
         },
 
 
@@ -107,13 +110,16 @@ export class ClienteMisReservas
           }
 
 
-          this.cdr
-            .markForCheck();
+          this.cdr.markForCheck();
         }
 
       });
   }
 
+
+  // =========================================================
+  // TEXTO DEL ESTADO
+  // =========================================================
 
   estadoTexto(
     estado: string
@@ -147,6 +153,10 @@ export class ClienteMisReservas
   }
 
 
+  // =========================================================
+  // CLASE DEL BADGE
+  // =========================================================
+
   estadoClase(
     estado: string
   ): string {
@@ -168,6 +178,8 @@ export class ClienteMisReservas
         return 'text-bg-info';
 
       case 'CANCELADA':
+        return 'text-bg-danger';
+
       case 'EXPIRADA':
         return 'text-bg-secondary';
 
@@ -176,6 +188,50 @@ export class ClienteMisReservas
     }
   }
 
+
+  // =========================================================
+  // DURACIÓN
+  // =========================================================
+
+  formatearDuracion(
+    minutos: number
+  ): string {
+
+    const horas =
+      Math.floor(
+        minutos / 60
+      );
+
+
+    const minutosRestantes =
+      minutos % 60;
+
+
+    if (
+      minutosRestantes === 0
+    ) {
+
+      return horas === 1
+        ? '1 hora'
+        : `${horas} horas`;
+    }
+
+
+    if (
+      horas === 0
+    ) {
+
+      return `${minutosRestantes} min`;
+    }
+
+
+    return `${horas} h ${minutosRestantes} min`;
+  }
+
+
+  // =========================================================
+  // HORA
+  // =========================================================
 
   formatearHora(
     hora: string
@@ -195,6 +251,10 @@ export class ClienteMisReservas
     );
   }
 
+
+  // =========================================================
+  // FECHA
+  // =========================================================
 
   formatearFecha(
     fecha: string
@@ -223,6 +283,10 @@ export class ClienteMisReservas
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
   }
 
+
+  // =========================================================
+  // MONTO
+  // =========================================================
 
   formatearMonto(
     monto: number

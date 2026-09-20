@@ -7,9 +7,36 @@
       <div class="col-xl-9">
 
 
-        @if (pagoRegistrado) {
+        <!-- ================================================= -->
+        <!-- CARGANDO RESERVA -->
+        <!-- ================================================= -->
 
+        @if (cargandoReserva) {
+
+          <div class="text-center py-5">
+
+            <div
+              class="spinner-border text-success"
+              role="status"
+            >
+              <span class="visually-hidden">
+                Cargando...
+              </span>
+            </div>
+
+            <div class="text-muted mt-3">
+              Cargando reserva...
+            </div>
+
+          </div>
+
+
+        } @else if (pagoRegistrado) {
+
+
+          <!-- ================================================= -->
           <!-- PAGO REGISTRADO -->
+          <!-- ================================================= -->
 
           <div
             class="card
@@ -53,18 +80,24 @@
 
 
               <p class="mb-1">
+
                 Reserva
+
                 <strong>
                   #{{ pagoRegistrado.idReserva }}
                 </strong>
+
               </p>
 
 
               <p class="mb-4">
+
                 Monto:
+
                 <strong>
                   S/ {{ pagoRegistrado.monto }}
                 </strong>
+
               </p>
 
 
@@ -83,10 +116,16 @@
         } @else if (reserva) {
 
 
+          <!-- ================================================= -->
+          <!-- RESERVA / PAGO -->
+          <!-- ================================================= -->
+
           <div class="row g-4">
 
 
-            <!-- RESUMEN -->
+            <!-- ================================================= -->
+            <!-- RESUMEN DE RESERVA -->
+            <!-- ================================================= -->
 
             <div class="col-lg-5">
 
@@ -103,6 +142,8 @@
                   </h5>
 
 
+                  <!-- RESERVA -->
+
                   <div class="mb-3">
 
                     <div class="small text-muted">
@@ -115,6 +156,8 @@
 
                   </div>
 
+
+                  <!-- SEDE -->
 
                   <div class="mb-3">
 
@@ -129,6 +172,8 @@
                   </div>
 
 
+                  <!-- CANCHA -->
+
                   <div class="mb-3">
 
                     <div class="small text-muted">
@@ -142,6 +187,8 @@
                   </div>
 
 
+                  <!-- FECHA -->
+
                   <div class="mb-3">
 
                     <div class="small text-muted">
@@ -154,6 +201,8 @@
 
                   </div>
 
+
+                  <!-- HORARIO -->
 
                   <div class="mb-3">
 
@@ -185,9 +234,12 @@
                   <hr>
 
 
+                  <!-- TOTAL -->
+
                   <div
                     class="d-flex
-                           justify-content-between"
+                           justify-content-between
+                           align-items-center"
                   >
 
                     <span class="fw-semibold">
@@ -209,7 +261,9 @@
               </div>
 
 
+              <!-- ================================================= -->
               <!-- CONTADOR -->
+              <!-- ================================================= -->
 
               <div
                 class="card
@@ -226,20 +280,25 @@
                       Tiempo restante
                     </div>
 
+
                     <div
                       class="contador
                              fw-bold
                              text-danger"
                     >
+
                       {{ obtenerMinutos() }}
                       :
                       {{ obtenerSegundos() }}
+
                     </div>
+
 
                     <small class="text-muted">
                       Sube tu comprobante antes
                       de que termine el tiempo.
                     </small>
+
 
                   } @else {
 
@@ -252,6 +311,7 @@
                       <strong>
                         Reserva expirada
                       </strong>
+
 
                       <div class="mt-1">
                         El tiempo para registrar
@@ -269,7 +329,9 @@
             </div>
 
 
-            <!-- PAGO -->
+            <!-- ================================================= -->
+            <!-- FORMULARIO DE PAGO -->
+            <!-- ================================================= -->
 
             <div class="col-lg-7">
 
@@ -285,11 +347,14 @@
                     Registrar pago
                   </h4>
 
+
                   <p class="text-muted">
                     Realiza el pago y adjunta
                     el comprobante.
                   </p>
 
+
+                  <!-- ERROR -->
 
                   @if (errorMensaje) {
 
@@ -309,13 +374,13 @@
                   >
 
 
-                    <!-- MÉTODO -->
+                    <!-- ================================================= -->
+                    <!-- MÉTODO DE PAGO -->
+                    <!-- ================================================= -->
 
                     <div class="mb-4">
 
-                      <label
-                        class="form-label"
-                      >
+                      <label class="form-label">
                         Método de pago
                       </label>
 
@@ -329,9 +394,7 @@
 
                           <div class="col-md-4">
 
-                            <label
-                              class="metodo-pago"
-                            >
+                            <label class="metodo-pago">
 
                               <input
                                 type="radio"
@@ -360,7 +423,9 @@
                     </div>
 
 
+                    <!-- ================================================= -->
                     <!-- INSTRUCCIONES -->
+                    <!-- ================================================= -->
 
                     <div
                       class="alert
@@ -376,6 +441,7 @@
 
                       <br>
 
+
                       <small class="text-muted">
                         Realiza el pago utilizando
                         el método seleccionado y luego
@@ -385,7 +451,9 @@
                     </div>
 
 
-                    <!-- OPERACIÓN -->
+                    <!-- ================================================= -->
+                    <!-- NÚMERO DE OPERACIÓN -->
+                    <!-- ================================================= -->
 
                     <div class="mb-3">
 
@@ -396,6 +464,7 @@
                         Número de operación
                       </label>
 
+
                       <input
                         id="numOperacion"
                         type="text"
@@ -404,9 +473,8 @@
                         maxlength="50"
                       >
 
-                      <div
-                        class="form-text"
-                      >
+
+                      <div class="form-text">
                         Ingresa el código o número
                         mostrado en tu comprobante.
                       </div>
@@ -414,7 +482,9 @@
                     </div>
 
 
-                    <!-- ARCHIVO -->
+                    <!-- ================================================= -->
+                    <!-- COMPROBANTE -->
+                    <!-- ================================================= -->
 
                     <div class="mb-4">
 
@@ -432,12 +502,11 @@
                         class="form-control"
                         accept=".jpg,.jpeg,.png,.pdf"
                         (change)="seleccionarArchivo($event)"
+                        [disabled]="expirado || enviando"
                       >
 
 
-                      <div
-                        class="form-text"
-                      >
+                      <div class="form-text">
                         JPG, JPEG, PNG o PDF.
                         Máximo 5 MB.
                       </div>
@@ -450,14 +519,20 @@
                                  text-success
                                  mt-2"
                         >
+
                           Archivo:
                           {{ comprobante.name }}
+
                         </div>
 
                       }
 
                     </div>
 
+
+                    <!-- ================================================= -->
+                    <!-- BOTÓN -->
+                    <!-- ================================================= -->
 
                     <button
                       type="submit"
@@ -483,6 +558,8 @@
 
                       } @else {
 
+                        <i class="bi bi-receipt me-2"></i>
+
                         Enviar comprobante
 
                       }
@@ -496,6 +573,44 @@
               </div>
 
             </div>
+
+          </div>
+
+
+        } @else {
+
+
+          <!-- ================================================= -->
+          <!-- FALLBACK -->
+          <!-- ================================================= -->
+
+          @if (errorMensaje) {
+
+            <div class="alert alert-danger">
+              {{ errorMensaje }}
+            </div>
+
+          } @else {
+
+            <div class="alert alert-warning">
+              No se pudo cargar la información de la reserva.
+            </div>
+
+          }
+
+
+          <div class="text-center mt-3">
+
+            <a
+              routerLink="/disponibilidad"
+              class="btn btn-outline-secondary"
+            >
+
+              <i class="bi bi-arrow-left me-2"></i>
+
+              Volver a disponibilidad
+
+            </a>
 
           </div>
 

@@ -96,6 +96,8 @@ export class Pago
 
   errorMensaje = '';
 
+  cargandoReserva = true;
+
 
   segundosRestantes = 0;
 
@@ -144,44 +146,169 @@ export class Pago
   }
 
 
-  private cargarReserva(): void {
+private cargarReserva(): void {
 
-    const idReserva =
-      Number(
-        this.route.snapshot
-          .paramMap
-          .get('idReserva')
-      );
-
-
-    const reservaGuardada =
-      this.reservaPendienteService
-        .obtener();
+  const idReserva =
+    Number(
+      this.route.snapshot
+        .paramMap
+        .get('idReserva')
+    );
 
 
-    if (
-      !idReserva
-      || !reservaGuardada
-      || reservaGuardada.idReserva !== idReserva
-    ) {
+  if (!idReserva) {
 
-      this.router.navigate([
-        '/disponibilidad'
-      ]);
+    this.cargandoReserva =
+      false;
 
-      return;
-    }
+    this.router.navigate([
+      '/disponibilidad'
+    ]);
 
+    return;
+  }
+
+
+  /*
+   * Primero intentamos utilizar la reserva
+   * guardada localmente.
+   *
+   * Esto permite que un invitado pase:
+   *
+   * Reserva → Pago
+   */
+  const reservaGuardada =
+    this.reservaPendienteService
+      .obtener();
+
+
+  if (
+    reservaGuardada
+    &&
+    reservaGuardada.idReserva === idReserva
+  ) {
 
     this.reserva =
       reservaGuardada;
 
+    this.cargandoReserva =
+      false;
 
-    this.actualizarContador();
+    this.prepararContador();
+
+    this.cdr.markForCheck();
+
+    return;
+  }
+
+
+  /*
+   * Si no está guardada localmente,
+   * intentamos obtenerla mediante el backend.
+   *
+   * Este caso está pensado para un
+   * CLIENTE autenticado.
+   *
+   * Ejemplo:
+   *
+   * Mis reservas
+   *      ↓
+   * /pago/25
+   */
+  this.pagoService
+    .obtenerReservaCliente(
+      idReserva
+    )
+    .subscribe({
+
+      next: reserva => {
+
+        this.reserva =
+          reserva;
+
+        this.cargandoReserva =
+          false;
+
+
+        /*
+         * Solo una reserva pendiente de pago
+         * debe permitir registrar comprobante.
+         */
+        if (
+          reserva.estado !== 'PENDIENTE_PAGO'
+        ) {
+
+          this.errorMensaje =
+            'Esta reserva ya no se encuentra pendiente de pago.';
+
+          this.expirado =
+            true;
+
+          this.cdr.markForCheck();
+
+          return;
+        }
+
+
+        this.prepararContador();
+
+        this.cdr.markForCheck();
+      },
+
+
+      error: (
+        error: HttpErrorResponse
+      ) => {
+
+        this.cargandoReserva =
+          false;
+
+
+        /*
+         * Un invitado no puede recuperar
+         * una reserva desde el backend porque
+         * no tiene una cuenta autenticada.
+         *
+         * En ese caso debe existir la reserva
+         * dentro de sessionStorage.
+         */
+        if (
+          error.status === 401
+          ||
+          error.status === 403
+          ||
+          error.status === 404
+        ) {
+
+          this.router.navigate([
+            '/disponibilidad'
+          ]);
+
+          return;
+        }
+
+
+        this.errorMensaje =
+          error.error?.message
+          ?? 'No se pudo cargar la reserva.';
+
+
+        this.cdr.markForCheck();
+      }
+
+    });
+}
+
+private prepararContador(): void {
+
+  this.actualizarContador();
+
+  if (!this.expirado) {
 
     this.iniciarContador();
   }
 
+}
 
   private iniciarContador(): void {
 

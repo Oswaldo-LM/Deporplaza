@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +34,10 @@ public class ClienteReservaController {
     }
 
 
+    // =========================================================
+    // LISTAR MIS RESERVAS
+    // =========================================================
+
     @GetMapping("/mis-reservas")
     public ResponseEntity<List<ReservaResponseDTO>>
     listarMisReservas(
@@ -41,6 +46,69 @@ public class ClienteReservaController {
             Jwt jwt
 
     ) {
+
+        Integer idUsuario =
+                obtenerIdUsuario(
+                        jwt
+                );
+
+
+        return ResponseEntity.ok(
+                reservaService
+                        .listarMisReservas(
+                                idUsuario
+                        )
+        );
+    }
+
+
+    // =========================================================
+    // OBTENER UNA RESERVA
+    // =========================================================
+
+    @GetMapping("/mis-reservas/{idReserva}")
+    public ResponseEntity<ReservaResponseDTO>
+    obtenerMiReserva(
+
+            @PathVariable
+            Integer idReserva,
+
+            @AuthenticationPrincipal
+            Jwt jwt
+
+    ) {
+
+        Integer idUsuario =
+                obtenerIdUsuario(
+                        jwt
+                );
+
+
+        return ResponseEntity.ok(
+                reservaService
+                        .obtenerMiReserva(
+                                idUsuario,
+                                idReserva
+                        )
+        );
+    }
+
+
+    // =========================================================
+    // EXTRAER USER ID DEL JWT
+    // =========================================================
+
+    private Integer obtenerIdUsuario(
+            Jwt jwt
+    ) {
+
+        if (jwt == null) {
+
+            throw new InvalidCredentialsException(
+                    "El usuario no está autenticado"
+            );
+        }
+
 
         Object userIdClaim =
                 jwt.getClaim(
@@ -58,20 +126,7 @@ public class ClienteReservaController {
         }
 
 
-        Integer idUsuario =
-                numero.intValue();
-
-
-        List<ReservaResponseDTO> reservas =
-                reservaService
-                        .listarMisReservas(
-                                idUsuario
-                        );
-
-
-        return ResponseEntity.ok(
-                reservas
-        );
+        return numero.intValue();
     }
 
 }

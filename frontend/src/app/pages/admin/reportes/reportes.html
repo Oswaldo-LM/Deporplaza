@@ -1,0 +1,625 @@
+<section>
+
+  <!-- ===================================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ===================================================== -->
+
+  <div
+    class="d-flex
+           justify-content-between
+           align-items-center
+           flex-wrap
+           gap-3
+           mb-4"
+  >
+
+    <div>
+
+      <h1 class="h3 fw-bold mb-1">
+        Reportes
+      </h1>
+
+      <p class="text-muted mb-0">
+        Consulta y exporta la información de las reservas.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-success"
+      [disabled]="
+        exportando
+        || cargando
+      "
+      (click)="exportarCsv()"
+    >
+
+      @if (exportando) {
+
+        <span
+          class="spinner-border
+                 spinner-border-sm
+                 me-2"
+        ></span>
+
+        Exportando...
+
+      } @else {
+
+        <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+
+        Exportar CSV
+
+      }
+
+    </button>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- FILTROS -->
+  <!-- ===================================================== -->
+
+  <div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body p-4">
+
+      <h5 class="fw-bold mb-3">
+        Filtros
+      </h5>
+
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="consultar()"
+      >
+
+        <div class="row g-3">
+
+
+          <!-- DESDE -->
+
+          <div class="col-md-6 col-xl-3">
+
+            <label class="form-label">
+              Fecha desde
+            </label>
+
+            <input
+              type="date"
+              class="form-control"
+              formControlName="desde"
+            >
+
+          </div>
+
+
+          <!-- HASTA -->
+
+          <div class="col-md-6 col-xl-3">
+
+            <label class="form-label">
+              Fecha hasta
+            </label>
+
+            <input
+              type="date"
+              class="form-control"
+              formControlName="hasta"
+            >
+
+          </div>
+
+
+          <!-- SEDE -->
+
+          <div class="col-md-6 col-xl-3">
+
+            <label class="form-label">
+              Sede
+            </label>
+
+            <select
+              class="form-select"
+              formControlName="idSede"
+            >
+
+              <option value="">
+                Todas las sedes
+              </option>
+
+
+              @for (
+                sede of sedes;
+                track sede.idSede
+              ) {
+
+                <option
+                  [value]="sede.idSede"
+                >
+                  {{ sede.nombre }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <!-- ESTADO -->
+
+          <div class="col-md-6 col-xl-3">
+
+            <label class="form-label">
+              Estado
+            </label>
+
+            <select
+              class="form-select"
+              formControlName="estado"
+            >
+
+              <option value="">
+                Todos los estados
+              </option>
+
+
+              @for (
+                estado of estadosReserva;
+                track estado
+              ) {
+
+                <option
+                  [value]="estado"
+                >
+                  {{ estadoTexto(estado) }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="d-flex
+                 justify-content-end
+                 gap-2
+                 mt-4"
+        >
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            [disabled]="cargando"
+            (click)="limpiarFiltros()"
+          >
+
+            <i class="bi bi-x-circle me-1"></i>
+
+            Limpiar
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="cargando"
+          >
+
+            @if (cargando) {
+
+              <span
+                class="spinner-border
+                       spinner-border-sm
+                       me-2"
+              ></span>
+
+              Consultando...
+
+            } @else {
+
+              <i class="bi bi-search me-1"></i>
+
+              Consultar
+
+            }
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- ERROR -->
+  <!-- ===================================================== -->
+
+  @if (errorMensaje) {
+
+    <div class="alert alert-danger">
+
+      <i class="bi bi-exclamation-triangle me-2"></i>
+
+      {{ errorMensaje }}
+
+    </div>
+
+  }
+
+
+  <!-- ===================================================== -->
+  <!-- RESUMEN -->
+  <!-- ===================================================== -->
+
+  <div class="row g-3 mb-4">
+
+
+    <div class="col-md-6 col-xl-3">
+
+      <div class="card border-0 shadow-sm h-100">
+
+        <div class="card-body">
+
+          <div class="text-muted small mb-1">
+            Total de reservas
+          </div>
+
+          <div class="fs-3 fw-bold">
+            {{ resumen.totalReservas }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+      <div class="card border-0 shadow-sm h-100">
+
+        <div class="card-body">
+
+          <div class="text-muted small mb-1">
+            Confirmadas
+          </div>
+
+          <div class="fs-3 fw-bold text-success">
+            {{ resumen.confirmadas }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+      <div class="card border-0 shadow-sm h-100">
+
+        <div class="card-body">
+
+          <div class="text-muted small mb-1">
+            Pendientes
+          </div>
+
+          <div class="fs-3 fw-bold text-warning">
+            {{ resumen.pendientes }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+      <div class="card border-0 shadow-sm h-100">
+
+        <div class="card-body">
+
+          <div class="text-muted small mb-1">
+            Ingresos aprobados
+          </div>
+
+          <div class="fs-3 fw-bold text-success">
+            {{ formatearMonto(resumen.ingresos) }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- TABLA -->
+  <!-- ===================================================== -->
+
+  <div class="card border-0 shadow-sm">
+
+    <div class="card-body p-0">
+
+      @if (cargando) {
+
+        <div class="text-center py-5">
+
+          <div
+            class="spinner-border text-success"
+          ></div>
+
+          <p class="text-muted mt-3 mb-0">
+            Generando reporte...
+          </p>
+
+        </div>
+
+      } @else if (reservas.length === 0) {
+
+        <div class="text-center py-5">
+
+          <div class="fs-1 text-muted mb-3">
+
+            <i class="bi bi-file-earmark-bar-graph"></i>
+
+          </div>
+
+          <h5>
+            No se encontraron resultados
+          </h5>
+
+          <p class="text-muted mb-0">
+            Modifica los filtros para realizar otra consulta.
+          </p>
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table
+                   table-hover
+                   align-middle
+                   mb-0"
+          >
+
+            <thead class="table-light">
+
+              <tr>
+
+                <th>
+                  Reserva
+                </th>
+
+                <th>
+                  Cliente
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Sede / Cancha
+                </th>
+
+                <th>
+                  Horario
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Pago
+                </th>
+
+                <th class="text-end">
+                  Total
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                reserva of reservas;
+                track reserva.idReserva
+              ) {
+
+                <tr>
+
+                  <!-- ID -->
+
+                  <td>
+
+                    <strong>
+                      #{{ reserva.idReserva }}
+                    </strong>
+
+                  </td>
+
+
+                  <!-- CLIENTE -->
+
+                  <td>
+
+                    <div class="fw-semibold">
+                      {{ reserva.cliente }}
+                    </div>
+
+                    <small class="text-muted">
+
+                      {{ reserva.tipoDocumento }}
+                      {{ reserva.numDocumento }}
+
+                    </small>
+
+                  </td>
+
+
+                  <!-- FECHA -->
+
+                  <td>
+
+                    {{
+                      formatearFecha(
+                        reserva.fechaTurno
+                      )
+                    }}
+
+                  </td>
+
+
+                  <!-- SEDE / CANCHA -->
+
+                  <td>
+
+                    <div>
+                      {{ reserva.sede }}
+                    </div>
+
+                    <small class="text-muted">
+                      {{ reserva.cancha }}
+                      ·
+                      {{ reserva.superficie }}
+                    </small>
+
+                  </td>
+
+
+                  <!-- HORARIO -->
+
+                  <td>
+
+                    {{
+                      formatearHora(
+                        reserva.horaInicio
+                      )
+                    }}
+
+                    -
+
+                    {{
+                      formatearHora(
+                        reserva.horaFin
+                      )
+                    }}
+
+                  </td>
+
+
+                  <!-- ESTADO RESERVA -->
+
+                  <td>
+
+                    <span
+                      class="badge"
+                      [class]="
+                        estadoClase(
+                          reserva.estadoReserva
+                        )
+                      "
+                    >
+
+                      {{
+                        estadoTexto(
+                          reserva.estadoReserva
+                        )
+                      }}
+
+                    </span>
+
+                  </td>
+
+
+                  <!-- PAGO -->
+
+                  <td>
+
+                    @if (reserva.metodoPago) {
+
+                      <div>
+                        {{ reserva.metodoPago }}
+                      </div>
+
+                      <small class="text-muted">
+
+                        {{
+                          reserva.estadoPago
+                          ?? '-'
+                        }}
+
+                      </small>
+
+                    } @else {
+
+                      <span class="text-muted">
+                        Sin pago
+                      </span>
+
+                    }
+
+                  </td>
+
+
+                  <!-- TOTAL -->
+
+                  <td
+                    class="text-end
+                           fw-semibold"
+                  >
+
+                    {{
+                      formatearMonto(
+                        reserva.total
+                      )
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</section>

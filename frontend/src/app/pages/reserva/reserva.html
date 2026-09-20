@@ -113,6 +113,33 @@
               </div>
             </div>
 
+            <div class="d-grid gap-2 mt-4">
+
+  <a
+    class="btn btn-cta"
+    [routerLink]="[
+      '/pago',
+      reservaCreada.idReserva
+    ]"
+  >
+    <i class="bi bi-receipt me-2"></i>
+    Subir comprobante de pago
+  </a>
+
+  @if (clienteAutenticado) {
+
+    <a
+      class="btn btn-outline-secondary"
+      routerLink="/cliente/mis-reservas"
+    >
+      <i class="bi bi-calendar-check me-2"></i>
+      Ver mis reservas
+    </a>
+
+  }
+
+</div>
+
           </div>
         </div>
 
@@ -256,6 +283,49 @@
                     <i class="bi bi-person-lines-fill text-brand"></i> Datos del cliente
                   </h5>
 
+                  @if (clienteAutenticado) {
+
+  @if (cargandoPerfilCliente) {
+
+    <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+
+      <span
+        class="spinner-border spinner-border-sm"
+      ></span>
+
+      <span>
+        Cargando los datos de tu cuenta...
+      </span>
+
+    </div>
+
+  } @else if (perfilClienteCargado) {
+
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+
+      <i class="bi bi-person-check-fill fs-5"></i>
+
+      <div>
+        Tus datos fueron cargados automáticamente
+        desde tu cuenta.
+      </div>
+
+    </div>
+
+  }
+
+} @else {
+
+  <div class="alert alert-light border mb-4">
+
+    <i class="bi bi-info-circle me-1"></i>
+
+    Puedes realizar la reserva sin crear una cuenta.
+
+  </div>
+
+}
+
                   <div class="mb-3">
                     <label class="form-label">Nombre completo</label>
                     <input type="text" class="form-control" formControlName="nombreCompleto">
@@ -300,7 +370,14 @@
                     Al confirmar, tu horario quedará bloqueado temporalmente mientras registras tu comprobante de pago.
                   </div>
 
-                  <button type="submit" class="btn btn-cta w-100" [disabled]="guardando">
+                  <button type="submit" class="btn btn-cta w-100" [disabled]="guardando ||
+    cargandoPerfilCliente
+    ||
+    (
+      clienteAutenticado
+      &&
+      !perfilClienteCargado
+    )">
                     @if (guardando) {
                       <span class="spinner-border spinner-border-sm me-2"></span> Registrando...
                     } @else {

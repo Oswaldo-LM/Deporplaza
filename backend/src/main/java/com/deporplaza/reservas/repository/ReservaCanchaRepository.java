@@ -125,4 +125,38 @@ List<ReservaCancha> buscarPorCliente(
         Integer idCliente
 );
 
+// =========================================================
+// REPORTE DE RESERVAS
+// =========================================================
+
+@Query("""
+        SELECT rc
+        FROM ReservaCancha rc
+        JOIN FETCH rc.reserva r
+        JOIN FETCH r.cliente cl
+        JOIN FETCH rc.cancha c
+        JOIN FETCH c.sede s
+        WHERE (:desde IS NULL OR rc.fechaTurno >= :desde)
+          AND (:hasta IS NULL OR rc.fechaTurno <= :hasta)
+          AND (:idSede IS NULL OR s.idSede = :idSede)
+          AND (:estado IS NULL OR r.estado = :estado)
+        ORDER BY rc.fechaTurno DESC,
+                 rc.horaInicio DESC
+        """)
+List<ReservaCancha> buscarReporteReservas(
+
+        @Param("desde")
+        LocalDate desde,
+
+        @Param("hasta")
+        LocalDate hasta,
+
+        @Param("idSede")
+        Integer idSede,
+
+        @Param("estado")
+        EstadoReserva estado
+
+);
+
 }

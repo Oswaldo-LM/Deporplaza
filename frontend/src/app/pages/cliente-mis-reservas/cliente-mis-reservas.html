@@ -2,6 +2,11 @@
 
   <div class="container">
 
+
+    <!-- ===================================================== -->
+    <!-- ENCABEZADO -->
+    <!-- ===================================================== -->
+
     <div
       class="d-flex
              justify-content-between
@@ -18,32 +23,43 @@
         </h1>
 
         <p class="text-muted mb-0">
-          Consulta tus reservas realizadas en DeporPlaza.
+          Consulta el estado de tus reservas realizadas
+          en DeporPlaza.
         </p>
 
       </div>
 
 
       <a
-        routerLink="/reserva"
+        routerLink="/disponibilidad"
         class="btn btn-success"
       >
+
+        <i class="bi bi-plus-circle me-2"></i>
+
         Nueva reserva
+
       </a>
 
     </div>
 
 
+    <!-- ===================================================== -->
+    <!-- CARGANDO -->
+    <!-- ===================================================== -->
+
     @if (cargando) {
 
-      <div
-        class="text-center py-5"
-      >
+      <div class="text-center py-5">
 
         <div
           class="spinner-border text-success"
           role="status"
-        ></div>
+        >
+          <span class="visually-hidden">
+            Cargando...
+          </span>
+        </div>
 
         <p class="text-muted mt-3">
           Cargando reservas...
@@ -51,9 +67,17 @@
 
       </div>
 
+
     } @else if (errorMensaje) {
 
+
+      <!-- =================================================== -->
+      <!-- ERROR -->
+      <!-- =================================================== -->
+
       <div class="alert alert-danger">
+
+        <i class="bi bi-exclamation-triangle me-2"></i>
 
         {{ errorMensaje }}
 
@@ -65,14 +89,22 @@
         class="btn btn-outline-danger"
         (click)="cargarReservas()"
       >
+
+        <i class="bi bi-arrow-clockwise me-2"></i>
+
         Intentar nuevamente
+
       </button>
+
 
     } @else if (reservas.length === 0) {
 
-      <div
-        class="card border-0 shadow-sm"
-      >
+
+      <!-- =================================================== -->
+      <!-- SIN RESERVAS -->
+      <!-- =================================================== -->
+
+      <div class="card border-0 shadow-sm">
 
         <div
           class="card-body
@@ -80,9 +112,19 @@
                  py-5"
         >
 
-          <h2 class="h5">
+          <div
+            class="display-5
+                   text-muted
+                   mb-3"
+          >
+            <i class="bi bi-calendar-x"></i>
+          </div>
+
+
+          <h2 class="h5 fw-bold">
             Aún no tienes reservas
           </h2>
+
 
           <p class="text-muted">
             Cuando realices una reserva aparecerá aquí.
@@ -93,14 +135,24 @@
             routerLink="/disponibilidad"
             class="btn btn-success"
           >
+
+            <i class="bi bi-search me-2"></i>
+
             Consultar disponibilidad
+
           </a>
 
         </div>
 
       </div>
 
+
     } @else {
+
+
+      <!-- =================================================== -->
+      <!-- LISTADO -->
+      <!-- =================================================== -->
 
       <div class="row g-4">
 
@@ -119,24 +171,32 @@
 
               <div class="card-body p-4">
 
+
+                <!-- ========================================= -->
+                <!-- CABECERA DE RESERVA -->
+                <!-- ========================================= -->
+
                 <div
                   class="d-flex
                          justify-content-between
                          align-items-start
                          flex-wrap
                          gap-3
-                         mb-3"
+                         mb-4"
                 >
 
                   <div>
 
-                    <h2 class="h5 mb-1">
+                    <h2 class="h5 fw-bold mb-1">
 
                       Reserva #{{ reserva.idReserva }}
 
                     </h2>
 
+
                     <span class="text-muted">
+
+                      <i class="bi bi-calendar-event me-1"></i>
 
                       {{
                         formatearFecha(
@@ -150,10 +210,12 @@
 
 
                   <span
-                    class="badge"
-                    [class]="estadoClase(
-                      reserva.estado
-                    )"
+                    class="badge fs-6"
+                    [class]="
+                      estadoClase(
+                        reserva.estado
+                      )
+                    "
                   >
 
                     {{
@@ -167,11 +229,18 @@
                 </div>
 
 
-                <div class="row g-3">
+                <!-- ========================================= -->
+                <!-- INFORMACIÓN -->
+                <!-- ========================================= -->
+
+                <div class="row g-4">
+
+
+                  <!-- SEDE -->
 
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Sede
                     </small>
 
@@ -182,9 +251,11 @@
                   </div>
 
 
+                  <!-- CANCHA -->
+
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Cancha
                     </small>
 
@@ -195,26 +266,32 @@
                   </div>
 
 
+                  <!-- ORIGEN -->
+
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Origen
                     </small>
 
                     <strong>
+
                       {{
                         reserva.origen === 'WEB'
                           ? 'Web'
                           : 'Presencial'
                       }}
+
                     </strong>
 
                   </div>
 
 
+                  <!-- HORARIO -->
+
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Horario
                     </small>
 
@@ -239,31 +316,36 @@
                   </div>
 
 
+                  <!-- DURACIÓN -->
+
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Duración
                     </small>
 
                     <strong>
 
                       {{
-                        reserva.duracionMinutos
+                        formatearDuracion(
+                          reserva.duracionMinutos
+                        )
                       }}
-                      minutos
 
                     </strong>
 
                   </div>
 
 
+                  <!-- TOTAL -->
+
                   <div class="col-md-4">
 
-                    <small class="text-muted d-block">
+                    <small class="text-muted d-block mb-1">
                       Total
                     </small>
 
-                    <strong>
+                    <strong class="text-success">
 
                       {{
                         formatearMonto(
@@ -278,25 +360,57 @@
                 </div>
 
 
+                <!-- ========================================= -->
+                <!-- ESTADO: PENDIENTE DE PAGO -->
+                <!-- ========================================= -->
+
                 @if (
                   reserva.estado ===
                   'PENDIENTE_PAGO'
                 ) {
 
                   <div
-                    class="alert alert-warning mt-4 mb-0"
+                    class="alert
+                           alert-warning
+                           d-flex
+                           justify-content-between
+                           align-items-center
+                           flex-wrap
+                           gap-3
+                           mt-4
+                           mb-0"
                   >
 
-                    Esta reserva está pendiente de pago.
+                    <div>
+
+                      <div class="fw-semibold">
+
+                        <i class="bi bi-clock-history me-1"></i>
+
+                        Pago pendiente
+
+                      </div>
+
+                      <div class="small">
+                        Debes subir tu comprobante antes
+                        de que la reserva expire.
+                      </div>
+
+                    </div>
+
 
                     <a
                       [routerLink]="[
                         '/pago',
                         reserva.idReserva
                       ]"
-                      class="alert-link ms-1"
+                      class="btn btn-warning"
                     >
-                      Realizar pago
+
+                      <i class="bi bi-receipt me-2"></i>
+
+                      Subir comprobante
+
                     </a>
 
                   </div>
@@ -304,16 +418,176 @@
                 }
 
 
+                <!-- ========================================= -->
+                <!-- PENDIENTE CONFIRMACIÓN -->
+                <!-- ========================================= -->
+
                 @if (
                   reserva.estado ===
                   'PENDIENTE_CONFIRMACION'
                 ) {
 
                   <div
-                    class="alert alert-info mt-4 mb-0"
+                    class="alert
+                           alert-info
+                           mt-4
+                           mb-0"
                   >
 
-                    Tu comprobante fue enviado y está pendiente de validación.
+                    <div class="fw-semibold mb-1">
+
+                      <i class="bi bi-hourglass-split me-1"></i>
+
+                      Pago en validación
+
+                    </div>
+
+                    Tu comprobante fue recibido correctamente.
+                    Un administrador debe validar el pago
+                    antes de confirmar la reserva.
+
+                  </div>
+
+                }
+
+
+                <!-- ========================================= -->
+                <!-- CONFIRMADA -->
+                <!-- ========================================= -->
+
+                @if (
+                  reserva.estado ===
+                  'CONFIRMADA'
+                ) {
+
+                  <div
+                    class="alert
+                           alert-success
+                           mt-4
+                           mb-0"
+                  >
+
+                    <div class="fw-semibold mb-1">
+
+                      <i class="bi bi-check-circle-fill me-1"></i>
+
+                      Reserva confirmada
+
+                    </div>
+
+                    El pago fue aprobado y tu cancha está
+                    reservada para la fecha y horario indicados.
+
+                  </div>
+
+                }
+
+
+                <!-- ========================================= -->
+                <!-- COMPLETADA -->
+                <!-- ========================================= -->
+
+                @if (
+                  reserva.estado ===
+                  'COMPLETADA'
+                ) {
+
+                  <div
+                    class="alert
+                           alert-primary
+                           mt-4
+                           mb-0"
+                  >
+
+                    <div class="fw-semibold mb-1">
+
+                      <i class="bi bi-check2-all me-1"></i>
+
+                      Reserva completada
+
+                    </div>
+
+                    Esta reserva ya fue atendida y se encuentra
+                    finalizada.
+
+                  </div>
+
+                }
+
+
+                <!-- ========================================= -->
+                <!-- CANCELADA -->
+                <!-- ========================================= -->
+
+                @if (
+                  reserva.estado ===
+                  'CANCELADA'
+                ) {
+
+                  <div
+                    class="alert
+                           alert-danger
+                           mt-4
+                           mb-0"
+                  >
+
+                    <div class="fw-semibold mb-1">
+
+                      <i class="bi bi-x-circle-fill me-1"></i>
+
+                      Reserva cancelada
+
+                    </div>
+
+                    Esta reserva fue cancelada y ya no bloquea
+                    el horario de la cancha.
+
+                  </div>
+
+                }
+
+
+                <!-- ========================================= -->
+                <!-- EXPIRADA -->
+                <!-- ========================================= -->
+
+                @if (
+                  reserva.estado ===
+                  'EXPIRADA'
+                ) {
+
+                  <div
+                    class="alert
+                           alert-secondary
+                           mt-4
+                           mb-0"
+                  >
+
+                    <div class="fw-semibold mb-1">
+
+                      <i class="bi bi-clock-fill me-1"></i>
+
+                      Reserva expirada
+
+                    </div>
+
+                    El comprobante de pago no fue registrado
+                    dentro del tiempo permitido.
+
+                    <div class="mt-3">
+
+                      <a
+                        routerLink="/disponibilidad"
+                        class="btn btn-outline-secondary btn-sm"
+                      >
+
+                        <i class="bi bi-arrow-repeat me-1"></i>
+
+                        Realizar otra reserva
+
+                      </a>
+
+                    </div>
 
                   </div>
 

@@ -84,7 +84,8 @@ public class ReservaService {
 
     @Transactional
     public ReservaResponseDTO crearReservaWeb(
-            ReservaWebRequestDTO request
+            ReservaWebRequestDTO request,
+            Integer idUsuarioAutenticado
     ) {
 
         LocalDateTime ahora =
@@ -221,12 +222,9 @@ public class ReservaService {
         // =====================================================
 
         Cliente cliente =
-                obtenerOCrearCliente(
-                        request.nombreCompleto(),
-                        request.tipoDocumento(),
-                        request.numDocumento(),
-                        request.email(),
-                        request.telefono()
+                resolverClienteReservaWeb(
+                        request,
+                        idUsuarioAutenticado
                 );
 
 
@@ -437,6 +435,165 @@ public class ReservaService {
                 })
                 .toList();
     }
+
+    // =========================================================
+// OBTENER UNA RESERVA DEL CLIENTE
+// =========================================================
+
+@Transactional(readOnly = true)
+public ReservaResponseDTO obtenerMiReserva(
+        Integer idUsuario,
+        Integer idReserva
+) {
+
+    Cliente cliente =
+            clienteRepository
+                    .findByUsuarioIdUsuario(
+                            idUsuario
+                    )
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "No existe un cliente asociado al usuario autenticado"
+                            )
+                    );
+
+
+    ReservaCancha detalle =
+            reservaCanchaRepository
+                    .buscarPorCliente(
+                            cliente.getIdCliente()
+                    )
+                    .stream()
+                    .filter(item ->
+                            item.getReserva()
+                                    .getIdReserva()
+                                    .equals(idReserva)
+                    )
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "No existe la reserva solicitada"
+                            )
+                    );
+
+
+    int cantidadExtras =
+            detalle.getCantidadExtras()
+                    .intValue();
+
+
+    int duracionMinutos =
+            60
+            + (
+                cantidadExtras
+                * 30
+            );
+
+
+    return convertirADTO(
+            detalle.getReserva(),
+            detalle,
+            duracionMinutos
+    );
+}
+
+
+
+
+    // =========================================================
+// RESOLVER CLIENTE PARA RESERVA WEB
+// =========================================================
+
+private Cliente resolverClienteReservaWeb(
+        ReservaWebRequestDTO request,
+        Integer idUsuarioAutenticado
+) {
+
+    /*
+     * =====================================================
+     * USUARIO NO AUTENTICADO
+     * =====================================================
+     *
+     * Se mantiene el funcionamiento original:
+     * buscar o crear cliente mediante documento.
+     */
+    if (idUsuarioAutenticado == null) {
+
+        return obtenerOCrearCliente(
+                request.nombreCompleto(),
+                request.tipoDocumento(),
+                request.numDocumento(),
+                request.email(),
+                request.telefono()
+        );
+    }
+
+
+    /*
+     * =====================================================
+     * USUARIO AUTENTICADO
+     * =====================================================
+     */
+
+    Usuario usuario =
+            usuarioRepository
+                    .findById(
+                            idUsuarioAutenticado
+                    )
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "No existe el usuario autenticado"
+                            )
+                    );
+
+
+    /*
+     * Solo las cuentas CLIENTE deben utilizar
+     * su relación TB_USUARIO -> TB_CLIENTE.
+     *
+     * Si por alguna razón un ADMIN o EMPLEADO
+     * utiliza el formulario público,
+     * mantenemos el comportamiento de invitado.
+     */
+    if (
+            usuario.getRol()
+                    != RolUsuario.CLIENTE
+    ) {
+
+        return obtenerOCrearCliente(
+                request.nombreCompleto(),
+                request.tipoDocumento(),
+                request.numDocumento(),
+                request.email(),
+                request.telefono()
+        );
+    }
+
+
+    /*
+     * Cuenta CLIENTE autenticada.
+     *
+     * En este caso NO confiamos en el
+     * documento enviado desde Angular.
+     *
+     * Utilizamos:
+     *
+     * JWT.userId
+     *      ↓
+     * TB_USUARIO.id_usuario
+     *      ↓
+     * TB_CLIENTE.id_usuario
+     */
+    return clienteRepository
+            .findByUsuarioIdUsuario(
+                    idUsuarioAutenticado
+            )
+            .orElseThrow(() ->
+                    new BusinessRuleException(
+                            "El usuario autenticado no tiene un cliente asociado"
+                    )
+            );
+}
 
 
     // =========================================================
