@@ -2,152 +2,224 @@
 
   <div class="login-container">
 
-    <div class="text-center mb-4">
+    <h1 class="visually-hidden">Administración DeporPlaza</h1>
 
-      <div class="brand">
-        DEPORPLAZA
+    <header class="login-header">
+
+      <div class="brand-row">
+
+        <span class="brand-logo">
+          <img src="img/logo.png" alt="">
+        </span>
+
+        <div class="brand-text">
+
+          <span class="brand-wordmark">
+            DEPOR<span>PLAZA</span>
+          </span>
+
+          <span class="brand-tagline">
+            <i class="dot" aria-hidden="true"></i>
+            Gestión central &amp; canchas
+          </span>
+
+        </div>
+
       </div>
 
-      <h1 class="h4 fw-bold mt-3 mb-1">
-        Administración
-      </h1>
 
-      <p class="text-muted mb-0">
+      <span class="access-pill">
+        <i class="bi bi-lock-fill" aria-hidden="true"></i>
         Acceso exclusivo para personal autorizado
+      </span>
+
+
+      <p class="login-description">
+        Panel de administración para gestionar reservas y canchas.
       </p>
 
-    </div>
+    </header>
 
 
-    <div class="card border-0 shadow-lg">
+    <div class="login-card">
 
-      <div class="card-body p-4 p-md-5">
+      <div class="card-head">
 
-        @if (errorMensaje) {
+        <h2 class="card-title">
+          <i class="bi bi-shield-lock" aria-hidden="true"></i>
+          Autenticación segura
+        </h2>
 
-          <div
-            class="alert alert-danger"
-            role="alert"
-          >
-            {{ errorMensaje }}
-          </div>
+        <span class="role-badge">ROL: ADMIN</span>
 
-        }
+      </div>
 
 
-        <form
-          [formGroup]="form"
-          (ngSubmit)="iniciarSesion()"
-        >
+      @if (errorMensaje) {
 
-          <div class="mb-3">
+        <div class="alert alert-danger" role="alert">
+          {{ errorMensaje }}
+        </div>
 
-            <label
-              for="email"
-              class="form-label"
-            >
-              Correo electrónico
-            </label>
+      }
+
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="iniciarSesion()"
+      >
+
+        <!-- Correo -->
+        <div class="field">
+
+          <label class="field-label" for="email">
+            Correo corporativo
+          </label>
+
+          <div class="field-control">
+
+            <i class="bi bi-at field-icon" aria-hidden="true"></i>
 
             <input
               id="email"
               type="email"
-              class="form-control"
+              class="field-input"
               formControlName="email"
               autocomplete="username"
               placeholder="admin@deporplaza.local"
+              [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
             >
-
-
-            @if (
-              form.controls.email.touched
-              &&
-              form.controls.email.invalid
-            ) {
-
-              <div class="text-danger small mt-1">
-                Ingresa un correo válido.
-              </div>
-
-            }
 
           </div>
 
 
-          <div class="mb-4">
+          @if (
+            form.controls.email.touched
+            &&
+            form.controls.email.invalid
+          ) {
 
-            <label
-              for="password"
-              class="form-label"
-            >
-              Contraseña
-            </label>
+            <div class="field-error">
+
+              @if (form.controls.email.hasError('required')) {
+
+                El correo es obligatorio.
+
+              } @else {
+
+                Ingresa un correo válido.
+
+              }
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- Contraseña -->
+        <div class="field">
+
+          <label class="field-label" for="password">
+            Contraseña
+          </label>
+
+          <div class="field-control">
+
+            <i class="bi bi-lock field-icon" aria-hidden="true"></i>
 
             <input
               id="password"
-              type="password"
-              class="form-control"
+              [type]="mostrarPassword ? 'text' : 'password'"
+              class="field-input has-toggle"
               formControlName="password"
               autocomplete="current-password"
+              placeholder="••••••••••••"
+              [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
             >
 
-
-            @if (
-              form.controls.password.touched
-              &&
-              form.controls.password.invalid
-            ) {
-
-              <div class="text-danger small mt-1">
-                La contraseña es obligatoria.
-              </div>
-
-            }
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="alternarPassword()"
+              [attr.aria-label]="mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              [attr.aria-pressed]="mostrarPassword"
+            >
+              <i
+                class="bi"
+                [class.bi-eye]="!mostrarPassword"
+                [class.bi-eye-slash]="mostrarPassword"
+                aria-hidden="true"
+              ></i>
+            </button>
 
           </div>
 
 
-          <button
-            type="submit"
-            class="btn btn-dark btn-lg w-100"
-            [disabled]="cargando"
-          >
+          @if (
+            form.controls.password.touched
+            &&
+            form.controls.password.invalid
+          ) {
 
-            @if (cargando) {
+            <div class="field-error">
+              La contraseña es obligatoria.
+            </div>
 
-              <span
-                class="spinner-border
-                       spinner-border-sm
-                       me-2"
-              ></span>
+          }
 
-              Iniciando sesión...
+        </div>
 
-            } @else {
 
-              Iniciar sesión
+        <button
+          type="submit"
+          class="btn-consola"
+          [disabled]="cargando"
+        >
 
-            }
+          @if (cargando) {
 
-          </button>
+            <span
+              class="spinner-border spinner-border-sm"
+              aria-hidden="true"
+            ></span>
 
-        </form>
+            Iniciando sesión...
+
+          } @else {
+
+            Iniciar sesión
+
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+
+          }
+
+        </button>
+
+      </form>
+
+
+      <div class="card-foot">
+
+        <p class="card-note">
+          <i class="bi bi-shield-check" aria-hidden="true"></i>
+          Solo las cuentas con rol de administrador pueden ingresar.
+        </p>
 
       </div>
 
     </div>
 
 
-    <div class="text-center mt-4">
+    <a routerLink="/" class="back-link">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      Volver al sitio web principal
+    </a>
 
-      <a
-        routerLink="/"
-        class="text-decoration-none"
-      >
-        ← Volver al sitio web
-      </a>
-
-    </div>
+    <p class="page-footer">
+      DeporPlaza • Página Administrativa
+    </p>
 
   </div>
 

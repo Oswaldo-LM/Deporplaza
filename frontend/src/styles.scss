@@ -1,6 +1,19 @@
 @import "styles/variables";
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+@import "variables";
+
+body {
+  font-family: $font-family-base;
+  color: $body-color;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-base;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 
 html, body {
   min-height: 100%;

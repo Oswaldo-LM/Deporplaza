@@ -1,39 +1,452 @@
+:host {
+  --dp-dark: var(--bs-dark, #0F1B2E);
+  --dp-primary: var(--bs-primary, #F7941D);
+  --dp-accent: #E8590C;
+  --dp-accent-dark: #A8380A;
+  --dp-muted: #6B7280;
+  --dp-line: #EEF0F3;
+  --dp-field-bg: #F3F4F6;
+  --dp-field-radius: 14px;
+
+  display: block;
+}
+
+
 .admin-login-page {
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2.5rem 1rem;
 
-  padding: 2rem;
-
+  // Cuadrícula suave + brillo naranja detrás de la tarjeta
   background:
-    linear-gradient(
-      135deg,
-      #f4f6f8,
-      #e9ecef
-    );
+    radial-gradient(60% 40% at 50% 55%, rgba(232, 89, 12, 0.08), transparent 70%),
+    linear-gradient(rgba(15, 27, 46, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 27, 46, 0.045) 1px, transparent 1px),
+    #EEF0F4;
+  background-size: auto, 32px 32px, 32px 32px, auto;
 }
 
 
 .login-container {
   width: 100%;
-  max-width: 430px;
+  max-width: 490px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 
-.brand {
-  font-size: 1.35rem;
+// ---------- Cabecera ----------
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 27, 46, 0.12);
+
+  img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+}
+
+
+// Solo si tu logo.png ya incluye el texto "DEPORPLAZA"
+.brand-full {
+  height: 56px;
+  width: auto;
+}
+
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+
+.brand-wordmark {
+  font-size: 1.65rem;
   font-weight: 800;
-  letter-spacing: 0.08rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--dp-dark);
+
+  span {
+    color: var(--dp-accent);
+  }
 }
 
 
-.card {
-  border-radius: 1rem;
+.brand-tagline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dp-muted);
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dp-accent);
+  }
 }
 
 
-.form-control {
-  min-height: 46px;
+.access-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+  padding: 0.4rem 0.95rem;
+  border: 1px solid rgba(15, 27, 46, 0.08);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--dp-dark);
+
+  i {
+    color: var(--dp-accent);
+  }
+}
+
+
+.login-description {
+  max-width: 38ch;
+  margin: 0.9rem 0 1.75rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--dp-muted);
+}
+
+
+// ---------- Tarjeta ----------
+
+.login-card {
+  position: relative;
+  width: 100%;
+  padding: 2.25rem 2rem 1.5rem;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 24px 60px rgba(15, 27, 46, 0.14),
+    0 2px 6px rgba(15, 27, 46, 0.06);
+
+  // Franja naranja superior
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--dp-accent), var(--dp-primary));
+  }
+}
+
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--dp-line);
+}
+
+
+.card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--dp-dark);
+
+  i {
+    font-size: 1.1rem;
+    color: var(--dp-accent);
+  }
+}
+
+
+.role-badge {
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  background: #E9ECF0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4A5568;
+}
+
+
+.alert {
+  border-radius: var(--dp-field-radius);
+  font-size: 0.9rem;
+}
+
+
+// ---------- Campos ----------
+
+.field {
+  margin-bottom: 1.1rem;
+}
+
+
+.field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dp-dark);
+}
+
+
+.field-control {
+  position: relative;
+}
+
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  left: 1.1rem;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--dp-muted);
+  pointer-events: none;
+}
+
+
+.field-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 1rem 0 3rem;
+  border: 1px solid transparent;
+  border-radius: var(--dp-field-radius);
+  background: var(--dp-field-bg);
+  box-shadow: inset 0 1px 2px rgba(15, 27, 46, 0.04);
+  font-size: 0.95rem;
+  color: var(--dp-dark);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  &::placeholder {
+    color: #A0A7B2;
+  }
+
+  &:focus {
+    outline: 0;
+    border-color: var(--dp-accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(232, 89, 12, 0.15);
+  }
+
+  &.is-invalid {
+    border-color: #DC3545;
+  }
+
+  &.has-toggle {
+    padding-right: 3rem;
+  }
+}
+
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dp-muted);
+  font-size: 1.1rem;
+
+  &:hover {
+    color: var(--dp-dark);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(232, 89, 12, 0.4);
+  }
+}
+
+
+.field-error {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #DC3545;
+}
+
+
+// ---------- Botón ----------
+
+.btn-consola {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: var(--dp-field-radius);
+  background: linear-gradient(135deg, var(--dp-dark), #1B2A44);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(15, 27, 46, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  i {
+    color: var(--dp-accent);
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(15, 27, 46, 0.34);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(232, 89, 12, 0.5);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.75;
+  }
+}
+
+
+// ---------- Pie de la tarjeta y de la página ----------
+
+.card-foot {
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--dp-line);
+}
+
+
+.card-note {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  background: var(--dp-field-bg);
+  font-size: 0.78rem;
+  color: var(--dp-muted);
+
+  i {
+    color: var(--dp-accent);
+  }
+}
+
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dp-accent-dark);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(232, 89, 12, 0.4);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+
+.page-footer {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: var(--dp-muted);
+  text-align: center;
+}
+
+
+// ---------- Responsive ----------
+
+@media (max-width: 575.98px) {
+
+  .admin-login-page {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .login-card {
+    padding: 2rem 1.25rem 1.25rem;
+  }
+
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+
+    img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .brand-wordmark {
+    font-size: 1.4rem;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .btn-consola,
+  .field-input {
+    transition: none;
+  }
+
+  .btn-consola:hover:not(:disabled) {
+    transform: none;
+  }
 }

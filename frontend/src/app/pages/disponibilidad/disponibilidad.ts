@@ -12,6 +12,10 @@ import {
 } from '@angular/forms';
 
 import {
+  CommonModule
+} from '@angular/common';
+
+import {
   HttpErrorResponse
 } from '@angular/common/http';
 
@@ -36,11 +40,27 @@ import {
 import { Router } from '@angular/router';
 
 
+interface DiaTab {
+  iso: string;
+  diaSemana: string;
+  dia: string;
+  mes: string;
+  esHoy: boolean;
+}
+
+
+interface Seleccion {
+  cancha: CanchaDisponibilidad;
+  bloque: BloqueDisponibilidad;
+}
+
+
 @Component({
   selector: 'app-disponibilidad',
 
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CommonModule
   ],
 
   templateUrl: './disponibilidad.html',
@@ -62,13 +82,12 @@ export class Disponibilidad
   private readonly router =
     inject(Router);
 
-  sedes: SedeResponse[] = [];
-
   private readonly cdRef =
     inject(ChangeDetectorRef);
 
-  resultado:
-    DisponibilidadResponse | null = null;
+  sedes: SedeResponse[] = [];
+
+  resultado: DisponibilidadResponse | null = null;
 
   horas: string[] = [];
 
@@ -78,12 +97,17 @@ export class Disponibilidad
 
   errorMensaje = '';
 
+  ultimaActualizacion: Date | null = null;
+
+  diasSemana: DiaTab[] = [];
+
+  seleccion: Seleccion | null = null;
+
+  sedeDropdownAbierto = false;
+
 
   readonly fechaMin =
-    this.formatearFecha(
-      new Date()
-    );
-
+    this.formatearFecha(new Date());
 
   readonly fechaMax =
     this.calcularFechaMaxima();
@@ -94,24 +118,19 @@ export class Disponibilidad
 
       sedeId: [
         0,
-        [
-          Validators.required,
-          Validators.min(1)
-        ]
+        [Validators.required, Validators.min(1)]
       ],
 
       fecha: [
         this.fechaMin,
-        [
-          Validators.required
-        ]
+        [Validators.required]
       ]
 
     });
 
 
   ngOnInit(): void {
-
+    this.diasSemana = this.generarDiasSemana();
     this.cargarSedes();
   }
 
@@ -120,108 +139,124 @@ export class Disponibilidad
 
     this.cargandoSedes = true;
 
-
     this.sedeService
       .listarActivas()
       .subscribe({
 
         next: sedes => {
-
-          this.sedes =
-            sedes;
-
+          this.sedes = sedes;
           this.cargandoSedes = false;
-
           this.cdRef.markForCheck();
         },
 
         error: () => {
-
           this.cargandoSedes = false;
-
-          this.errorMensaje =
-            'No se pudo cargar la lista de sedes.';
-
+          this.errorMensaje = 'No se pudo cargar la lista de sedes.';
           this.cdRef.markForCheck();
         }
-          
+
       });
 
   }
+
+
+  toggleSedeDropdown(): void {
+    this.sedeDropdownAbierto = !this.sedeDropdownAbierto;
+  }
+
+
+  seleccionarSede(idSede: number): void {
+    this.form.controls.sedeId.setValue(idSede);
+    this.sedeDropdownAbierto = false;
+    this.onCambioSede();
+  }
+
+
+  obtenerNombreSedeSeleccionada(): string {
+
+    const idSede = this.form.controls.sedeId.value;
+
+    if (!idSede) {
+      return 'Selecciona una sede';
+    }
+
+    const sede = this.sedes.find(s => s.idSede === idSede);
+
+    return sede ? sede.nombre : 'Selecciona una sede';
+  }
+
+
+  onFechaManualCambiada(event: Event): void {
+
+    const input = event.target as HTMLInputElement;
+    const fecha = input.value;
+
+    if (fecha) {
+      this.seleccionarFecha(fecha);
+    }
+  }
+
+
+  get fechaMinSemana(): string {
+    return this.diasSemana[0]?.iso ?? this.fechaMin;
+  }
+
+  get fechaMaxSemana(): string {
+    return this.diasSemana[this.diasSemana.length - 1]?.iso ?? this.fechaMax;
+  }
+
+
+  onCambioSede(): void {
+    if (this.form.controls.sedeId.valid) {
+      this.consultar();
+    }
+  }
+
+
+  seleccionarFecha(iso: string): void {
+    this.form.controls.fecha.setValue(iso);
+
+    if (this.form.controls.sedeId.valid) {
+      this.consultar();
+    }
+  }
+
+
   consultar(): void {
 
     if (this.form.invalid) {
-
       this.form.markAllAsTouched();
-
       return;
     }
 
-
     this.consultando = true;
-
     this.errorMensaje = '';
-
     this.resultado = null;
-
     this.horas = [];
+    this.seleccion = null;
 
-
-    const {
-      sedeId,
-      fecha
-    } =
-      this.form.getRawValue();
-
+    const { sedeId, fecha } = this.form.getRawValue();
 
     this.disponibilidadService
-      .consultar(
-        sedeId,
-        fecha
-      )
+      .consultar(sedeId, fecha)
       .subscribe({
 
         next: resultado => {
-
-          this.resultado =
-            resultado;
-
-          this.horas =
-            this.obtenerHoras(
-              resultado
-            );
-
+          this.resultado = resultado;
+          this.horas = this.obtenerHoras(resultado);
           this.consultando = false;
-
+          this.ultimaActualizacion = new Date();
           this.cdRef.markForCheck();
-
         },
 
-
-        error: (
-          error: HttpErrorResponse
-        ) => {
-
+        error: (error: HttpErrorResponse) => {
           this.consultando = false;
 
-
-          if (
-            error.error?.message
-          ) {
-
-            this.errorMensaje =
-              error.error.message;
-
-          } else {
-
-            this.errorMensaje =
-              'No se pudo consultar la disponibilidad.';
-          }
+          this.errorMensaje = error.error?.message
+            ?? 'No se pudo consultar la disponibilidad.';
 
           this.cdRef.markForCheck();
-
         }
-        
 
       });
 
@@ -234,186 +269,165 @@ export class Disponibilidad
   ): BloqueDisponibilidad | null {
 
     return cancha.bloques.find(
-      bloque =>
-        bloque.horaInicio === hora
+      bloque => bloque.horaInicio === hora
     ) ?? null;
   }
 
 
-  formatearHora(
-    hora: string
-  ): string {
-
-    return hora.substring(
-      0,
-      5
-    );
+  formatearHora(hora: string): string {
+    return hora.substring(0, 5);
   }
 
 
-  formatearDuracion(
-    minutos: number | null
-  ): string {
+  formatearDuracion(minutos: number | null): string {
 
     if (minutos === null) {
       return '';
     }
 
-
-    const horas =
-      Math.floor(
-        minutos / 60
-      );
-
-    const minutosRestantes =
-      minutos % 60;
-
+    const horas = Math.floor(minutos / 60);
+    const minutosRestantes = minutos % 60;
 
     if (minutosRestantes === 0) {
-
       return `${horas} h`;
     }
-
 
     return `${horas} h ${minutosRestantes} min`;
   }
 
 
-  private obtenerHoras(
-    resultado: DisponibilidadResponse
-  ): string[] {
+  seleccionarHorario(
+    cancha: CanchaDisponibilidad,
+    bloque: BloqueDisponibilidad
+  ): void {
 
-    const horas =
-      resultado.canchas
-        .flatMap(
-          cancha =>
-            cancha.bloques.map(
-              bloque =>
-                bloque.horaInicio
-            )
-        );
+    if (!bloque.disponible || bloque.maxExtrasDisponibles === null) {
+      return;
+    }
 
-
-    return [
-      ...new Set(horas)
-    ].sort();
+    this.seleccion = { cancha, bloque };
+    this.cdRef.markForCheck();
   }
 
 
-  private formatearFecha(
-    fecha: Date
-  ): string {
+  esSeleccionado(
+    cancha: CanchaDisponibilidad,
+    bloque: BloqueDisponibilidad
+  ): boolean {
 
-    const year =
-      fecha.getFullYear();
+    return this.seleccion !== null
+      && this.seleccion.cancha.idCancha === cancha.idCancha
+      && this.seleccion.bloque.horaInicio === bloque.horaInicio;
+  }
 
-    const month =
-      String(
-        fecha.getMonth() + 1
-      ).padStart(
-        2,
-        '0'
-      );
 
-    const day =
-      String(
-        fecha.getDate()
-      ).padStart(
-        2,
-        '0'
-      );
+  obtenerTotalSeleccion(): number {
 
+    if (!this.seleccion) {
+      return 0;
+    }
+
+    return this.seleccion.cancha.precioHora;
+  }
+
+
+  cambiarSeleccion(): void {
+    this.seleccion = null;
+  }
+
+
+  continuarConReserva(): void {
+
+    if (!this.seleccion) {
+      return;
+    }
+
+    const { cancha, bloque } = this.seleccion;
+    const fecha = this.form.controls.fecha.value;
+
+    this.router.navigate(
+      ['/reserva'],
+      {
+        queryParams: {
+          idCancha: cancha.idCancha,
+          fecha: fecha,
+          horaInicio: bloque.horaInicio,
+          maxExtras: bloque.maxExtrasDisponibles
+        }
+      }
+    );
+  }
+
+
+  private obtenerHoras(resultado: DisponibilidadResponse): string[] {
+
+    const horas = resultado.canchas
+      .flatMap(cancha => cancha.bloques.map(bloque => bloque.horaInicio));
+
+    return [...new Set(horas)].sort();
+  }
+
+
+  private generarDiasSemana(): DiaTab[] {
+
+    const dias: DiaTab[] = [];
+    const hoy = new Date();
+
+    const formatoDia = new Intl.DateTimeFormat('es-PE', { weekday: 'short' });
+    const formatoMes = new Intl.DateTimeFormat('es-PE', { month: 'short' });
+
+    for (let i = 0; i < 7; i++) {
+
+      const fecha = new Date(hoy);
+      fecha.setDate(hoy.getDate() + i);
+
+      dias.push({
+        iso: this.formatearFecha(fecha),
+        diaSemana: formatoDia.format(fecha).replace('.', '').toUpperCase(),
+        dia: String(fecha.getDate()),
+        mes: formatoMes.format(fecha).replace('.', ''),
+        esHoy: i === 0
+      });
+    }
+
+    return dias;
+  }
+
+
+  private formatearFecha(fecha: Date): string {
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   }
 
 
-  private calcularFechaMaxima():
-    string {
+  private calcularFechaMaxima(): string {
 
-    const hoy =
-      new Date();
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = hoy.getMonth();
+    const day = hoy.getDate();
 
+    const primerDiaMesDestino = new Date(year, month + 1, 1);
 
-    const year =
-      hoy.getFullYear();
+    const ultimoDiaMesDestino = new Date(
+      primerDiaMesDestino.getFullYear(),
+      primerDiaMesDestino.getMonth() + 1,
+      0
+    ).getDate();
 
-    const month =
-      hoy.getMonth();
+    const diaDestino = Math.min(day, ultimoDiaMesDestino);
 
-    const day =
-      hoy.getDate();
-
-
-    /*
-     * Calculamos el próximo mes
-     * manteniendo el comportamiento
-     * similar a LocalDate.plusMonths(1).
-     */
-    const primerDiaMesDestino =
-      new Date(
-        year,
-        month + 1,
-        1
-      );
-
-
-    const ultimoDiaMesDestino =
-      new Date(
-        primerDiaMesDestino.getFullYear(),
-        primerDiaMesDestino.getMonth() + 1,
-        0
-      ).getDate();
-
-
-    const diaDestino =
-      Math.min(
-        day,
-        ultimoDiaMesDestino
-      );
-
-
-    const fechaMaxima =
-      new Date(
-        primerDiaMesDestino.getFullYear(),
-        primerDiaMesDestino.getMonth(),
-        diaDestino
-      );
-
-
-    return this.formatearFecha(
-      fechaMaxima
+    const fechaMaxima = new Date(
+      primerDiaMesDestino.getFullYear(),
+      primerDiaMesDestino.getMonth(),
+      diaDestino
     );
+
+    return this.formatearFecha(fechaMaxima);
   }
-
-  seleccionarHorario(
-  cancha: CanchaDisponibilidad,
-  bloque: BloqueDisponibilidad
-  ): void {
-
-  if (
-    !bloque.disponible
-    || bloque.maxExtrasDisponibles === null
-  ) {
-    return;
-  }
-
-
-  const fecha =
-    this.form.controls.fecha.value;
-
-
-  this.router.navigate(
-    ['/reserva'],
-    {
-      queryParams: {
-        idCancha: cancha.idCancha,
-        fecha: fecha,
-        horaInicio: bloque.horaInicio,
-        maxExtras: bloque.maxExtrasDisponibles
-      }
-    }
-  );
-}
 
 }

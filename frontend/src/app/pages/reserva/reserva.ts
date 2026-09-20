@@ -450,5 +450,20 @@ export class Reserva
       5
     );
   }
+obtenerImagenCancha(): string {
+
+  if (!this.cancha) {
+    return 'img/cancha-1.jpg';
+  }
+
+  const superficie =
+    this.cancha.superficie?.toUpperCase() ?? '';
+
+  if (superficie.includes('LOSA')) {
+    return 'img/cancha-2.jpg';
+  }
+
+  return 'img/cancha-1.jpg';
+}
 
 }

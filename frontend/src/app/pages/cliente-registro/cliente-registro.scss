@@ -1,14 +1,459 @@
-.card {
-  border-radius: 1rem;
+/*
+ * Los colores salen de tus variables globales ($primary, $success, $dark, $body-color),
+ * que Bootstrap expone como --bs-primary, --bs-success, etc. Si no existen,
+ * se usan los mismos valores como respaldo.
+ */
+:host {
+  --dp-dark: var(--bs-dark, #0F1B2E);
+  --dp-primary: var(--bs-primary, #F7941D);
+  --dp-primary-dark: #D97706;
+  --dp-success: var(--bs-success, #1A7A4C);
+  --dp-text: var(--bs-body-color, #4A5568);
+  --dp-muted: #6B7280;
+  --dp-field-radius: 14px;
+
+  display: block;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(26, 122, 76, 0.28), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(217, 119, 6, 0.22), transparent 45%),
+    #23272a;
 }
 
 
-.form-control,
-.form-select {
-  min-height: 46px;
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
 }
 
 
-button {
-  min-height: 48px;
+.login-card {
+  width: 100%;
+  max-width: 1180px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+
+// ---------- Columna del formulario ----------
+
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 3rem 1.75rem;
+}
+
+
+.login-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--dp-text);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--dp-dark);
+  }
+}
+
+
+.club-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(26, 122, 76, 0.12);
+  color: var(--dp-success);
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  &::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(26, 122, 76, 0.18);
+  }
+}
+
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #D9560B, #A8380A);
+  color: #fff;
+  font-size: 1.35rem;
+  box-shadow: 0 6px 16px rgba(217, 86, 11, 0.35);
+}
+
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--dp-dark);
+}
+
+
+.brand-tagline {
+  font-size: 0.75rem;
+  color: var(--dp-muted);
+}
+
+
+.login-title {
+  margin: 0 0 0.4rem;
+  font-size: 2rem;
+  color: var(--dp-dark);
+}
+
+
+.login-subtitle {
+  margin: 0 0 1.5rem;
+  max-width: 44ch;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--dp-muted);
+}
+
+
+.alert {
+  border-radius: var(--dp-field-radius);
+  font-size: 0.9rem;
+}
+
+
+// ---------- Grilla de campos ----------
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.span-12 { grid-column: span 12; }
+.span-8  { grid-column: span 8; }
+.span-6  { grid-column: span 6; }
+.span-4  { grid-column: span 4; }
+
+
+.field {
+  margin-bottom: 1rem;
+}
+
+
+.field-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dp-dark);
+}
+
+
+.field-control {
+  position: relative;
+}
+
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  left: 1.1rem;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--dp-muted);
+  pointer-events: none;
+}
+
+
+.field-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem 0 2.9rem;
+  border: 1px solid #EDEFF2;
+  border-radius: var(--dp-field-radius);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 27, 46, 0.05);
+  font-size: 0.95rem;
+  color: var(--dp-dark);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #A0A7B2;
+  }
+
+  &:focus {
+    outline: 0;
+    border-color: var(--dp-primary);
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, 0.2);
+  }
+
+  &.is-invalid {
+    border-color: #DC3545;
+  }
+
+  &.has-toggle {
+    padding-right: 3rem;
+  }
+}
+
+
+.field-select {
+  padding-left: 1rem;
+  padding-right: 2.5rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 14px;
+}
+
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dp-muted);
+  font-size: 1.1rem;
+
+  &:hover {
+    color: var(--dp-dark);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, 0.45);
+  }
+}
+
+
+.field-error {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: #DC3545;
+}
+
+
+// ---------- Botón ----------
+
+.btn-entrar {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 0;
+  border-radius: var(--dp-field-radius);
+  background: linear-gradient(90deg, var(--dp-success) 0%, #1F2A2A 100%);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(26, 122, 76, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(26, 122, 76, 0.34);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, 0.55);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.75;
+  }
+}
+
+
+// ---------- Invitado y pie ----------
+
+.guest-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1.25rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: var(--dp-field-radius);
+  background: #FFF0EA;
+  font-size: 0.82rem;
+}
+
+
+.guest-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--dp-dark);
+
+  i {
+    color: var(--dp-primary-dark);
+  }
+}
+
+
+.guest-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  color: #A8380A;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+
+.login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--dp-muted);
+}
+
+
+.footer-link {
+  font-weight: 700;
+  color: var(--dp-dark);
+  text-decoration: underline;
+}
+
+
+.secure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  i {
+    color: var(--dp-success);
+  }
+}
+
+
+// ---------- Columna de imagen ----------
+
+.login-hero {
+  position: relative;
+  background: linear-gradient(160deg, #123524, #0F1B2E);
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% center;
+  }
+}
+
+
+// ---------- Responsive ----------
+
+@media (max-width: 991.98px) {
+
+  .login-card {
+    max-width: 620px;
+    grid-template-columns: 1fr;
+  }
+
+  .login-hero {
+    display: none;
+  }
+
+  .login-panel {
+    padding: 2rem 2rem 1.75rem;
+  }
+}
+
+
+@media (max-width: 575.98px) {
+
+  .login-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .login-panel {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .login-title {
+    font-size: 1.7rem;
+  }
+
+  .span-8,
+  .span-6,
+  .span-4 {
+    grid-column: span 12;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .btn-entrar,
+  .field-input {
+    transition: none;
+  }
+
+  .btn-entrar:hover:not(:disabled) {
+    transform: none;
+  }
 }

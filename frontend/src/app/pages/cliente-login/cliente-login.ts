@@ -38,52 +38,61 @@ import {
 })
 export class ClienteLogin {
 
-  private readonly fb =
-    inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
 
-  private readonly authService =
-    inject(AuthService);
+  private readonly authService = inject(AuthService);
 
-  private readonly router =
-    inject(Router);
+  private readonly router = inject(Router);
 
-  private readonly cdr =
-    inject(ChangeDetectorRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
 
-  cargando =
-    false;
+  cargando = false;
 
-  errorMensaje =
-    '';
+  errorMensaje = '';
+
+  mostrarPassword = false;
 
 
-  form =
-    this.fb.nonNullable.group({
+  form = this.fb.nonNullable.group({
 
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email
-        ]
-      ],
-
-      password: [
-        '',
-        [
-          Validators.required
-        ]
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email
       ]
+    ],
 
-    });
+    password: [
+      '',
+      [
+        Validators.required
+      ]
+    ],
+
+    // Solo UI por ahora: no se envía al backend.
+    recordarme: [false]
+
+  });
+
+
+  alternarPassword(): void {
+
+    this.mostrarPassword = !this.mostrarPassword;
+  }
+
+
+  continuarConGoogle(): void {
+
+    // TODO: conectar con el flujo de Google cuando exista en el backend.
+    this.errorMensaje = 'El acceso con Google aún no está disponible.';
+  }
 
 
   iniciarSesion(): void {
 
-    if (
-      this.form.invalid
-    ) {
+    if (this.form.invalid) {
 
       this.form.markAllAsTouched();
 
@@ -91,52 +100,37 @@ export class ClienteLogin {
     }
 
 
-    this.cargando =
-      true;
+    this.cargando = true;
 
-    this.errorMensaje =
-      '';
+    this.errorMensaje = '';
+
+
+    // Solo se envían email y password (recordarme no va al backend).
+    const { email, password } = this.form.getRawValue();
 
 
     this.authService
-      .loginCliente(
-        this.form.getRawValue()
-      )
+      .loginCliente({ email, password })
       .subscribe({
 
         next: respuesta => {
 
-          this.cargando =
-            false;
+          this.cargando = false;
 
 
-          if (
-            respuesta.rol
-            !== 'CLIENTE'
-          ) {
+          if (respuesta.rol !== 'CLIENTE') {
 
-            this.authService
-              .logout();
-
+            this.authService.logout();
 
             this.errorMensaje =
               'Esta cuenta no corresponde a un cliente.';
 
-
-            this.cdr
-              .markForCheck();
+            this.cdr.markForCheck();
 
             return;
           }
 
 
-          /*
-           * Por ahora volvemos al inicio.
-           *
-           * Más adelante lo cambiaremos por:
-           *
-           * /cliente/mis-reservas
-           */
           this.router.navigate([
             '/cliente/mis-reservas'
           ]);
@@ -144,17 +138,12 @@ export class ClienteLogin {
         },
 
 
-        error: (
-          error: HttpErrorResponse
-        ) => {
+        error: (error: HttpErrorResponse) => {
 
-          this.cargando =
-            false;
+          this.cargando = false;
 
 
-          if (
-            error.status === 401
-          ) {
+          if (error.status === 401) {
 
             this.errorMensaje =
               'Correo o contraseña incorrectos.';
@@ -167,8 +156,7 @@ export class ClienteLogin {
           }
 
 
-          this.cdr
-            .markForCheck();
+          this.cdr.markForCheck();
         }
 
       });
