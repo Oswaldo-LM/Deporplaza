@@ -1,31 +1,46 @@
 name: deporplaza
 
+
 services:
 
+  # ========================================================
+  # MYSQL
+  # ========================================================
+
   mysql:
+
     image: mysql:8.0
+
     container_name: reservas_mysql
 
     restart: unless-stopped
 
+
     environment:
+
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+
       MYSQL_USER: ${MYSQL_USER}
+
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
+
     ports:
+
       - "3307:3306"
 
+
     volumes:
+
       - mysql_data:/var/lib/mysql
 
-      # Carga automática de la base
-      # únicamente durante la primera
-      # inicialización del volumen.
       - ./database/deporplaza.sql:/docker-entrypoint-initdb.d/01-deporplaza.sql:ro
 
+
     healthcheck:
+
       test:
         [
           "CMD",
@@ -36,10 +51,103 @@ services:
           "-uroot",
           "-p${MYSQL_ROOT_PASSWORD}"
         ]
+
       interval: 10s
+
       timeout: 5s
+
       retries: 10
 
 
+
+  # ========================================================
+  # SPRING BOOT
+  # ========================================================
+
+  backend:
+
+    build:
+
+      context: ./backend
+
+      dockerfile: Dockerfile
+
+
+    container_name: reservas_backend
+
+    restart: unless-stopped
+
+
+    environment:
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+      APP_STORAGE_ROOT: /app/uploads
+
+
+    depends_on:
+
+      mysql:
+
+        condition: service_healthy
+
+
+    ports:
+
+      - "8080:8080"
+
+
+    volumes:
+
+      - uploads_data:/app/uploads
+
+
+
+  # ========================================================
+  # ANGULAR + NGINX
+  # ========================================================
+
+  frontend:
+
+    build:
+
+      context: ./frontend
+
+      dockerfile: Dockerfile
+
+
+    container_name: reservas_frontend
+
+    restart: unless-stopped
+
+
+    depends_on:
+
+      - backend
+
+
+    ports:
+
+      - "80:80"
+
+
+
+# ==========================================================
+# VOLÚMENES
+# ==========================================================
+
 volumes:
+
   mysql_data:
+
+  uploads_data:
